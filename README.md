@@ -1,5 +1,6 @@
 # Dorobot
-Open source bot for CoD4.
+Open source bot for CoD4, based on https://github.com/Martind180/AvengersTool
+
 Bugs and missing features are to be expected.
 
 ## FAQ, known issues
