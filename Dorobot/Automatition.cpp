@@ -251,17 +251,23 @@ void Automatition::bhop()
 	if (doroBot->uiMenu->bhop_toggle && doroBot->bindManager->bindActive("Bhop")) {
 		input_s* input = doroBot->game->getInput_s();
 		usercmd_s* cmd = input->GetUserCmd(input->currentCmdNum);
-		if (!wasOnGround && doroBot->game->isOnGround()) {
-			if (!(cmd->buttons & USERCMD_BUTTONS_JUMP)) {
-				cmd->buttons |= USERCMD_BUTTONS_JUMP;
-			}
-			else {
-				cmd->buttons &= !USERCMD_BUTTONS_JUMP;
-			}
+		if (doroBot->strafeBot->nextFrameOnGround) {  //if were going to be touching the ground on the next frame, release the jump button
+			cmd->buttons |= USERCMD_BUTTONS_JUMP;
 		}
 	}
 
 	wasOnGround = doroBot->game->isOnGround();
+}
+
+void Automatition::bhopAfterCycle()
+{
+	bool isInAir = Dorobot::getInstance()->game->getPmoveCurrent()->ps->GroundEntityNum == 1023;
+	if (isInAir && doroBot->strafeBot->nextFrameOnGround) {
+		input_s* input = doroBot->game->getInput_s();
+		usercmd_s* cmd = input->GetUserCmd(input->currentCmdNum);
+
+		cmd->buttons &= !USERCMD_BUTTONS_JUMP;
+	}
 }
 
 void Automatition::yawScript()
@@ -281,12 +287,14 @@ void Automatition::cycleAfterStrafebot()
 	auto2Spam();
 	rpgLookdown();
 	rpgJump();
-	bhop();
+	bhopAfterCycle();
 	yawScript();
 }
 
 void Automatition::cycle()
 {
+	bhop();
+
 	if (doroBot->game->isSpectating() || doroBot->game->isNocliping()) {
 		return;
 	}

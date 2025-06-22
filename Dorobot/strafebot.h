@@ -14,6 +14,7 @@ public:
 	int bestFps;
 	int bestFpsInvert;
 	bool nextFrameShotRpg;
+	bool nextFrameOnGround;
 	Vec3<float> predictedOptimalView;
 	Vec3<float> predictedOptimalViewInvert;
 	Vec3<float> predictedVeloIncreaseVec;

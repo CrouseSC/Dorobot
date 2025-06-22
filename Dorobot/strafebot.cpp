@@ -25,6 +25,7 @@ void StrafeBot::cycle()
 		return;
 	pmove_t* predicted = doroBot->prediction->predictMove(doroBot->game->get_fps(), doroBot->game->getView().y, false);  //run prediction even if strafebot isn't active so stuff like rpg lookdown can function
 	nextFrameShotRpg = predicted->ps->WeaponDelay <= 3 && pmove->ps->WeaponDelay != 0;
+	nextFrameOnGround = predicted->ps->GroundEntityNum == 1022;
 	deletePmove(predicted);
 }
 
