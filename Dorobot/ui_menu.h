@@ -56,6 +56,7 @@ class UI_Menu
 	bool bhop_toggle = false;
 	bool yawScript_toggle = false;
 	bool no200_toggle = false;
+	bool progressbar_toggle = true;
 	float yawScriptAngle = 0.f;
 
 	// Default the position to the center of the screen if there is no position in the config file

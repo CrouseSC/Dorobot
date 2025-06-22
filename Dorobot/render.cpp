@@ -222,6 +222,9 @@ void Render::endScene(LPDIRECT3DDEVICE9 dev)
 	if (doroBot->sessionManager) {
 		doroBot->sessionManager->cycle();
 	}
+	if (doroBot->recorder) {
+		doroBot->recorder->renderProgressbar();
+	}
 
 	ImGui::EndFrame();
 	ImGui::Render();

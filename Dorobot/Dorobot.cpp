@@ -87,6 +87,7 @@ void Dorobot::loadConfiguration() {
     uiMenu->yawScript_toggle = j.value("yawScriptToggle", uiMenu->yawScript_toggle);
     uiMenu->yawScriptAngle = j.value("yawScriptAngle", uiMenu->yawScriptAngle);
     uiMenu->no200_toggle = j.value("no200Toggle", uiMenu->no200_toggle);
+    uiMenu->progressbar_toggle = j.value("progressbarToggle", uiMenu->progressbar_toggle);
 
 	bindManager->binds = j.value("binds", bindManager->binds);
 
@@ -159,6 +160,7 @@ anglehelper_color.z, uiMenu->anglehelper_color.w };
     j["yawScriptToggle"] = uiMenu->yawScript_toggle;
     j["yawScriptAngle"] = uiMenu->yawScriptAngle;
     j["no200Toggle"] = uiMenu->no200_toggle;
+    j["progressbarToggle"] = uiMenu->progressbar_toggle;
 	j["binds"] = bindManager->binds;
     std::ofstream out(CONFIG);
     out << j.dump(2) << std::endl;
