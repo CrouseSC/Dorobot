@@ -80,7 +80,7 @@ void Recorder::cycleEditingAfterCreatemove()
 			return;
 		}
 
-		if (atFrame == 0 && !doroBot->positioning->moveToPosition(mm::truncate_vector(selectedRecording.packets[0].origin), 0.05f)) {
+		if (atFrame == 0 && !doroBot->positioning->moveToPosition(mm::truncate_vector(selectedRecording.packets[0].origin), 0.005f)) {
 			return;
 		}
 
