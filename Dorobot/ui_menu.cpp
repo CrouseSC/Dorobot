@@ -45,6 +45,9 @@ void UI_Menu::menu(Dorobot* doroBot)
             if (ImGui::Checkbox("Strafebot", &strafebot_toggle)) {
                 doroBot->saveConfiguration();
             }
+            if (ImGui::Checkbox("Autofps", &autofps_toggle)) {
+                doroBot->saveConfiguration();
+            }
             if (ImGui::Checkbox("PFPS", &pfps_toggle)) {
                 doroBot->saveConfiguration();
             }
@@ -198,6 +201,10 @@ void UI_Menu::menu(Dorobot* doroBot)
                 doroBot->saveConfiguration();
             }
             if (ImGui::Checkbox("Display angles", &displayAngles_toggle)) {
+                doroBot->saveConfiguration();
+            }
+            ImGui::Indent(-20.f);
+            if (ImGui::Checkbox("Draw recorder progress bar", &progressbar_toggle)) {
                 doroBot->saveConfiguration();
             }
             if (ImGui::Checkbox("DEBUG", &debugToggle)) {

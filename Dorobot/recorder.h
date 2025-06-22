@@ -25,16 +25,17 @@ public:
 	void saveRecord();
 	void setSelectedRecording(const Recording& recording);
 	void registerBinds();
+	void renderProgressbar();
 	bool isPlayingRecording = false;
 	static constexpr char recordFolderPath[] = "Dorobot/Recordings/";
 	static constexpr char recordingExtension[] = ".doro";
+	int atFrame = 0;
 
 private:
 	static constexpr int RINGBUFFER_SIZE = 16384;
 	Dorobot* doroBot;
 	RingBuffer<CommandPacket, RINGBUFFER_SIZE> packets;
 	Recording selectedRecording;
-	int atFrame = 0;
 	int baseCmdTime = 0;
 	void setSelectedRecord();
 

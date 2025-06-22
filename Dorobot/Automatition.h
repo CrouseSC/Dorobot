@@ -19,6 +19,7 @@ private:
 	void autoTransferzone3Spam();
 	void auto2Spam();
 	void bhop();
+	void bhopAfterCycle();
 	void yawScript();
 	Dorobot* doroBot;
 

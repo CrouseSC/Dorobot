@@ -40,6 +40,17 @@ void Recorder::registerBinds()
 	doroBot->bindManager->registerBindName("Stop playing recording", BIND_TYPE_HOLD);
 }
 
+void Recorder::renderProgressbar()
+{
+	if (doroBot->recorder->isPlayingRecording && doroBot->uiMenu->progressbar_toggle) {
+		ImGui::SetNextWindowBgAlpha(0.f);
+		ImGui::SetNextWindowSize(ImVec2(300, 30));
+		ImGui::Begin("ProgressBar", 0, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoDecoration);
+		ImGui::ProgressBar( (float)doroBot->recorder->atFrame / (float)doroBot->recorder->getSelectedRecording()->packets.size());
+		ImGui::End();
+	}
+}
+
 void Recorder::cycleEditing(refdef_t* refDef)
 {
 	/*doroBot->uiDebug->addDebuginfo("X", doroBot->game->getOrigin().x);
@@ -80,7 +91,7 @@ void Recorder::cycleEditingAfterCreatemove()
 			return;
 		}
 
-		if (atFrame == 0 && !doroBot->positioning->moveToPosition(mm::truncate_vector(selectedRecording.packets[0].origin), 0.05f)) {
+		if (atFrame == 0 && !doroBot->positioning->moveToPosition(mm::truncate_vector(selectedRecording.packets[0].origin), 0.005f)) {
 			return;
 		}
 

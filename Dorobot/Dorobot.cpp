@@ -58,6 +58,7 @@ void Dorobot::loadConfiguration() {
     uiMenu->fpswheel_centerline_toggle = j.value("FPSWheel_centerline", uiMenu->fpswheel_centerline_toggle);
     uiMenu->pfps_toggle = j.value("pfps", uiMenu->pfps_toggle);
     uiMenu->strafebot_toggle = j.value("strafebot", uiMenu->strafebot_toggle);
+    uiMenu->autofps_toggle = j.value("autofps", uiMenu->autofps_toggle);
     uiMenu->keyOnW_toggle = j.value("keyOnW_toggle", uiMenu->keyOnW_toggle);
     uiMenu->keyOnWWDSelected = j.value("keyOnWWDSelected", uiMenu->keyOnWWDSelected);
     uiMenu->sprintToPrestrafe_toggle = j.value("sprintToPrestrafe", uiMenu->sprintToPrestrafe_toggle);
@@ -86,6 +87,7 @@ void Dorobot::loadConfiguration() {
     uiMenu->yawScript_toggle = j.value("yawScriptToggle", uiMenu->yawScript_toggle);
     uiMenu->yawScriptAngle = j.value("yawScriptAngle", uiMenu->yawScriptAngle);
     uiMenu->no200_toggle = j.value("no200Toggle", uiMenu->no200_toggle);
+    uiMenu->progressbar_toggle = j.value("progressbarToggle", uiMenu->progressbar_toggle);
 
 	bindManager->binds = j.value("binds", bindManager->binds);
 
@@ -123,6 +125,7 @@ void Dorobot::saveConfiguration()
     j["FPSWheel_centerline"] = uiMenu->fpswheel_centerline_toggle;
     j["pfps"] = uiMenu->pfps_toggle;
     j["strafebot"] = uiMenu->strafebot_toggle;
+    j["autofps"] = uiMenu->autofps_toggle;
     j["keyOnW_toggle"] = uiMenu->keyOnW_toggle;
     j["keyOnWWDSelected"] = uiMenu->keyOnWWDSelected;
     j["sprintToPrestrafe"] = uiMenu->sprintToPrestrafe_toggle;
@@ -157,6 +160,7 @@ anglehelper_color.z, uiMenu->anglehelper_color.w };
     j["yawScriptToggle"] = uiMenu->yawScript_toggle;
     j["yawScriptAngle"] = uiMenu->yawScriptAngle;
     j["no200Toggle"] = uiMenu->no200_toggle;
+    j["progressbarToggle"] = uiMenu->progressbar_toggle;
 	j["binds"] = bindManager->binds;
     std::ofstream out(CONFIG);
     out << j.dump(2) << std::endl;
