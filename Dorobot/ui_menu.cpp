@@ -45,6 +45,9 @@ void UI_Menu::menu(Dorobot* doroBot)
             if (ImGui::Checkbox("Strafebot", &strafebot_toggle)) {
                 doroBot->saveConfiguration();
             }
+            if (ImGui::Checkbox("Autofps", &autofps_toggle)) {
+                doroBot->saveConfiguration();
+            }
             if (ImGui::Checkbox("PFPS", &pfps_toggle)) {
                 doroBot->saveConfiguration();
             }

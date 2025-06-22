@@ -58,6 +58,7 @@ void Dorobot::loadConfiguration() {
     uiMenu->fpswheel_centerline_toggle = j.value("FPSWheel_centerline", uiMenu->fpswheel_centerline_toggle);
     uiMenu->pfps_toggle = j.value("pfps", uiMenu->pfps_toggle);
     uiMenu->strafebot_toggle = j.value("strafebot", uiMenu->strafebot_toggle);
+    uiMenu->autofps_toggle = j.value("autofps", uiMenu->autofps_toggle);
     uiMenu->keyOnW_toggle = j.value("keyOnW_toggle", uiMenu->keyOnW_toggle);
     uiMenu->keyOnWWDSelected = j.value("keyOnWWDSelected", uiMenu->keyOnWWDSelected);
     uiMenu->sprintToPrestrafe_toggle = j.value("sprintToPrestrafe", uiMenu->sprintToPrestrafe_toggle);
@@ -123,6 +124,7 @@ void Dorobot::saveConfiguration()
     j["FPSWheel_centerline"] = uiMenu->fpswheel_centerline_toggle;
     j["pfps"] = uiMenu->pfps_toggle;
     j["strafebot"] = uiMenu->strafebot_toggle;
+    j["autofps"] = uiMenu->autofps_toggle;
     j["keyOnW_toggle"] = uiMenu->keyOnW_toggle;
     j["keyOnWWDSelected"] = uiMenu->keyOnWWDSelected;
     j["sprintToPrestrafe"] = uiMenu->sprintToPrestrafe_toggle;

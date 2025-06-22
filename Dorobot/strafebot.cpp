@@ -43,9 +43,13 @@ void StrafeBot::setGameToBotValues()
 	input_s* input = doroBot->game->getInput_s();
 	usercmd_s* cmd = input->GetUserCmd(input->currentCmdNum);
 
-	doroBot->game->setView(predictedOptimalView);
-	doroBot->game->setFps(bestFps);
-	cmd->angles[1] = ANGLE2SHORT(predictedOptimalView.y);  //i dont really care to reverse view->cmd conversion bs, so i just set it
+	if (doroBot->uiMenu->strafebot_toggle) {
+		doroBot->game->setView(predictedOptimalView);
+		cmd->angles[1] = ANGLE2SHORT(predictedOptimalView.y);  //i dont really care to reverse view->cmd conversion bs, so i just set it
+	}
+	if (doroBot->uiMenu->autofps_toggle) {
+		doroBot->game->setFps(bestFps);
+	}
 }
 
 void StrafeBot::registerBinds()
@@ -61,8 +65,7 @@ bool StrafeBot::shouldUseStrafeBot()
 	Lmove lmove = Dorobot::getInstance()->game->getLmove();
 	bool isMoving = (lmove.isForward && (lmove.isRight || lmove.isLeft)) || (lmove.isRight || lmove.isLeft);
 	bool isCorrectGameMode = !(doroBot->game->isNocliping() || doroBot->game->isSpectating());
-	bool toggle = doroBot->uiMenu->strafebot_toggle;
-	return isMoving && isCorrectGameMode && toggle && doroBot->game->getPmoveCurrent()->ps;
+	return isMoving && isCorrectGameMode && doroBot->game->getPmoveCurrent()->ps;
 }
 
 std::vector<int> StrafeBot::getFpsList()
@@ -99,7 +102,13 @@ void StrafeBot::calculateBestAngleAndFps(bool invert)
 			gSpeed = 189.4f - i*0.1f;
 		}
 
-		float approxOptimal = doroBot->game->getOptimalAngle(gSpeed, invert);
+		float approxOptimal;
+		if (doroBot->uiMenu->strafebot_toggle) {
+			approxOptimal = doroBot->game->getOptimalAngle(gSpeed, invert);
+		}
+		else {
+			approxOptimal = doroBot->game->getView().y;
+		}
 
 		Vec3<float> currentVeloVec = pmove->ps->velocity;
 		float currentVelo = currentVeloVec.Length2D();

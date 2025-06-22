@@ -35,6 +35,7 @@ class UI_Menu
 	bool lines_toggle = false;
 	bool pfps_toggle = false;
 	bool strafebot_toggle = false;
+	bool autofps_toggle = false;
 	bool keyOnW_toggle = false;
 	bool keyOnWWDSelected = true;
 	bool sprintToPrestrafe_toggle = false;
