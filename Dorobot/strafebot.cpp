@@ -13,9 +13,10 @@ StrafeBot::~StrafeBot()
 void StrafeBot::cycle()
 {
 	lastFps = doroBot->game->get_fps();
-	if (shouldUseStrafeBot()) {
-		calculateBestAngleAndFps();
-		calculateBestAngleAndFps(true);
+	strafeBotCycled = shouldUseStrafeBot();
+
+	if (strafeBotCycled) {
+		nextFrameValues = calculateBestAngleAndFpsForBothDirections(*buildDefaultPmove().get());
 		if (!doroBot->bindManager->bindActive("Override bot")) {
 			setGameToBotValues();
 		}
@@ -23,19 +24,20 @@ void StrafeBot::cycle()
 	pmove_t* pmove = doroBot->game->getPmoveCurrent();
 	if (!pmove->ps)
 		return;
-	pmove_t* predicted = doroBot->prediction->predictMove(doroBot->game->get_fps(), doroBot->game->getView().y, false);  //run prediction even if strafebot isn't active so stuff like rpg lookdown can function
-	nextFrameShotRpg = predicted->ps->WeaponDelay <= 3 && pmove->ps->WeaponDelay != 0;
-	nextFrameOnGround = predicted->ps->GroundEntityNum == 1022;
-	deletePmove(predicted);
+
+	auto predicted = buildDefaultPmove();
+	doroBot->prediction->predictMove(doroBot->game->get_fps(), doroBot->game->getView().y, false, *predicted.get());  //run prediction even if strafebot isn't active so stuff like rpg lookdown can function
+	nextFrameValues.shotRpg = predicted->pm->ps->WeaponDelay <= 3 && pmove->ps->WeaponDelay != 0;
+	nextFrameValues.onGround = predicted->pm->ps->GroundEntityNum == 1022;
 }
 
 void StrafeBot::invertStrafeAfterCycle()
 {
 	input_s* input = doroBot->game->getInput_s();
 	usercmd_s* cmd = input->GetUserCmd(input->currentCmdNum);
-	cmd->angles[1] = ANGLE2SHORT(predictedOptimalViewInvert.y);
+	cmd->angles[1] = ANGLE2SHORT(nextFrameValues.predictedViewInvert.y);
 
-	*reinterpret_cast<int*>(addr_maxfps) = bestFpsInvert;
+	*reinterpret_cast<int*>(addr_maxfps) = nextFrameValues.fpsInvert;
 }
 
 void StrafeBot::setGameToBotValues()
@@ -44,11 +46,11 @@ void StrafeBot::setGameToBotValues()
 	usercmd_s* cmd = input->GetUserCmd(input->currentCmdNum);
 
 	if (doroBot->uiMenu->strafebot_toggle) {
-		doroBot->game->setView(predictedOptimalView);
-		cmd->angles[1] = ANGLE2SHORT(predictedOptimalView.y);  //i dont really care to reverse view->cmd conversion bs, so i just set it
+		doroBot->game->setView(nextFrameValues.predictedView);
+		cmd->angles[1] = ANGLE2SHORT(nextFrameValues.predictedView.y);  //i dont really care to reverse view->cmd conversion bs, so i just set it
 	}
 	if (doroBot->uiMenu->autofps_toggle) {
-		doroBot->game->setFps(bestFps);
+		doroBot->game->setFps(nextFrameValues.fps);
 	}
 }
 
@@ -87,19 +89,26 @@ std::vector<int> StrafeBot::getFpsList()
 	return fpsList;
 }
 
-void StrafeBot::calculateBestAngleAndFps(bool invert)
+PredictionValues StrafeBot::calculateBestAngleAndFps(safePmove_t pmove, bool invert)
 {
+	PredictionValues predictionValues;
 	std::vector<int> fpsList = getFpsList();
-	pmove_t* pmove = doroBot->game->getPmoveCurrent();
+
+	if (pmove.pm->ps->GroundEntityNum == 1022 && !doroBot->automatition->isJumping) {  //air calcs apply on the frame the player is jumping but isn't in air yet
+		if (!invert) {
+			predictionValues = calculateBestAngleForGroundStrafe(pmove);
+		}
+		return predictionValues;
+	}
 
 	int i;
 	for (i = 0; i < 10; i++) {
 		float gSpeed;
-		if (doroBot->game->isOnGround()) {
-			gSpeed = 231.7f;
+		if (doroBot->game->isDevmap()) {  //190.f doesn't work very well if deltaAngles are mismatched between the client and server.
+			gSpeed = 190.f - i * 0.1f;
 		}
 		else {
-			gSpeed = 189.4f - i*0.1f;
+			gSpeed = 189.4f - i * 0.1f;
 		}
 
 		float approxOptimal;
@@ -110,61 +119,47 @@ void StrafeBot::calculateBestAngleAndFps(bool invert)
 			approxOptimal = doroBot->game->getView().y;
 		}
 
-		Vec3<float> currentVeloVec = pmove->ps->velocity;
+		Vec3<float> currentVeloVec = pmove.pm->ps->velocity;
 		float currentVelo = currentVeloVec.Length2D();
 		float bestPredictedVelo = 0;
 		float bestPredictedVeloIncrease = 0;
 		Vec3<float> bestPredictedVeloVec;
 		if (!invert) {
-			bestFps = fpsList[0];
+			predictionValues.fps = fpsList[0];
+			predictionValues.predictedView = doroBot->game->getView();
+			predictionValues.predictedView.y = approxOptimal;
+			predictionValues.predictedView = doroBot->game->toCodAngles(predictionValues.predictedView);
 		}
 		else {
-			bestFpsInvert = fpsList[0];
-		}
-
-		if (!invert) {
-			predictedOptimalView = doroBot->game->getView();
-			predictedOptimalView.y = approxOptimal;
-			predictedOptimalView = doroBot->game->toCodAngles(predictedOptimalView);
-		}
-		else {
-			predictedOptimalViewInvert = doroBot->game->getView();
-			predictedOptimalViewInvert.y = approxOptimal;
-			predictedOptimalViewInvert = doroBot->game->toCodAngles(predictedOptimalViewInvert);
-		}
-
-		if (doroBot->game->isOnGround()) {
-			if (!invert) {
-				bestFps = 333;
-			}
-			else {
-				bestFpsInvert = 333;
-			}
-			return;
+			predictionValues.fpsInvert = fpsList[0];
+			predictionValues.predictedViewInvert = doroBot->game->getView();
+			predictionValues.predictedViewInvert.y = approxOptimal;
+			predictionValues.predictedViewInvert = doroBot->game->toCodAngles(predictionValues.predictedViewInvert);
 		}
 
 		for (auto fps : fpsList) {
+			safePmove_t pmoveCurrent(pmove);
 			if (fps == 15 && !doroBot->bindManager->bindActive("15 slide")) {
 				continue;
 			}
 
-			pmove_t* currentPmove = doroBot->prediction->predictMove(fps, approxOptimal, invert);
-			Vec3<float> predictedVeloVec = currentPmove->ps->velocity;
+			doroBot->prediction->predictMove(fps, approxOptimal, invert, pmoveCurrent);
+			Vec3<float> predictedVeloVec = pmoveCurrent.pm->ps->velocity;
 			float predictedVelo = predictedVeloVec.Length2D();
-			deletePmove(currentPmove);
 
 			float veloIncrease = predictedVelo - currentVelo;
 			Vec3<float> predictedVeloChangeVec = predictedVeloVec - currentVeloVec;
-			if (veloIncrease * fps > bestPredictedVeloIncrease * (invert ? bestFpsInvert : bestFps) ) {
+			if (veloIncrease * fps > bestPredictedVeloIncrease * (invert ? predictionValues.fpsInvert : predictionValues.fps) ) {
 				bestPredictedVelo = predictedVelo;
 				bestPredictedVeloIncrease = veloIncrease;
 				bestPredictedVeloVec = predictedVeloVec;
 				doroBot->uiDebug->addDebuginfo("bestPredictedVeloIncrease", bestPredictedVeloIncrease);
+
 				if (!invert) {
-					bestFps = fps;
+					predictionValues.fps = fps;
 				}
 				else {
-					bestFpsInvert = fps;
+					predictionValues.fpsInvert = fps;
 				}
 			}
 			else if (i > 6 && doroBot->game->getVelocity().Length2D() >= 2400.f
@@ -172,31 +167,103 @@ void StrafeBot::calculateBestAngleAndFps(bool invert)
 				bestPredictedVelo = predictedVelo;
 				bestPredictedVeloIncrease = veloIncrease;
 				bestPredictedVeloVec = predictedVeloVec;
+
 				if (!invert) {
-					bestFps = fps;
+					predictionValues.fps = fps;
 				}
 				else {
-					bestFpsInvert = fps;
+					predictionValues.fpsInvert = fps;
 				}
 			}
 		}
 
 		if (!invert) {
-			predictedVeloIncreaseVec = bestPredictedVeloVec - currentVeloVec;
-			this->predictedVeloIncrease = bestPredictedVeloIncrease;
+			predictionValues.predictedVeloIncreaseVec = bestPredictedVeloVec - currentVeloVec;
+			predictionValues.predictedVeloIncrease = bestPredictedVeloIncrease;
 			if (bestPredictedVeloIncrease > 0) {
 				break;
 			}
 		}
 		else {
-			predictedVeloIncreaseVecInvert = bestPredictedVeloVec - currentVeloVec;
-			this->predictedVeloIncreaseInvert = bestPredictedVeloIncrease;
+			predictionValues.predictedVeloIncreaseVecInvert = bestPredictedVeloVec - currentVeloVec;
+			predictionValues.predictedVeloIncreaseInvert = bestPredictedVeloIncrease;
 			if (bestPredictedVeloIncrease > 0) {
 				break;
 			}
 		}
 	}
-	doroBot->uiDebug->addDebuginfo("fps", bestFps);
-	doroBot->uiDebug->addDebuginfo("veloIncreaseVec", &predictedVeloIncreaseVec);
 
+	doroBot->uiDebug->addDebuginfo("fps", predictionValues.fps);
+	doroBot->uiDebug->addDebuginfo("veloIncreaseVec", &predictionValues.predictedVeloIncreaseVec);
+	return predictionValues;
+}
+
+PredictionValues StrafeBot::calculateBestAngleForGroundStrafe(safePmove_t pmove, bool invert)
+{
+	PredictionValues predictionValues;
+
+	int i;
+	int besti = 0;
+	float bestPredictedVeloIncrease = -5.f;
+	float bestPredictedVelo = 0;
+
+	for (i = 0; i < 30; i++) {
+		safePmove_t pmoveCurrent(pmove);
+		float gSpeed = 232.7f - i * 0.2f;
+
+		float approxOptimal;
+		if (doroBot->uiMenu->strafebot_toggle) {
+			approxOptimal = doroBot->game->getOptimalAngle(gSpeed);
+		}
+		else {
+			approxOptimal = doroBot->game->getView().y;
+		}
+
+		Vec3<float> currentVeloVec = pmoveCurrent.pm->ps->velocity;
+		float currentVelo = currentVeloVec.Length2D();
+		Vec3<float> bestPredictedVeloVec;
+		predictionValues.fps = 333;
+		predictionValues.fpsInvert = 333;
+
+		doroBot->prediction->predictMove(predictionValues.fps, approxOptimal, false, pmoveCurrent);
+		Vec3<float> predictedVeloVec = pmoveCurrent.pm->ps->velocity;
+		float predictedVelo = predictedVeloVec.Length2D();
+
+		float veloIncrease = predictedVelo - currentVelo;
+		Vec3<float> predictedVeloChangeVec = predictedVeloVec - currentVeloVec;
+		if (veloIncrease > bestPredictedVeloIncrease) {
+			bestPredictedVelo = predictedVelo;
+			bestPredictedVeloIncrease = veloIncrease;
+			bestPredictedVeloVec = predictedVeloVec;
+			predictionValues.predictedVeloIncreaseVec = bestPredictedVeloVec - currentVeloVec;
+			predictionValues.predictedVeloIncrease = bestPredictedVeloIncrease;
+			predictionValues.predictedView = doroBot->game->getView();
+			predictionValues.predictedView.y = approxOptimal;
+			predictionValues.predictedView = doroBot->game->toCodAngles(predictionValues.predictedView);
+			besti = i;
+		}
+	}
+
+	return predictionValues;
+}
+
+PredictionValues StrafeBot::calculateBestAngleAndFpsForBothDirections(const safePmove_t& pmove)
+{
+	PredictionValues predictionValues = calculateBestAngleAndFps(pmove);
+	PredictionValues predictionValuesInvert = calculateBestAngleAndFps(pmove, true);
+	predictionValues.fpsInvert = predictionValuesInvert.fpsInvert;
+	predictionValues.optimalAngleInvert = predictionValuesInvert.optimalAngleInvert;
+	predictionValues.predictedVeloIncreaseInvert = predictionValuesInvert.predictedVeloIncreaseInvert;
+	predictionValues.predictedVeloIncreaseVecInvert = predictionValuesInvert.predictedVeloIncreaseVecInvert;
+	predictionValues.predictedVeloVecInvert = predictionValuesInvert.predictedVeloVecInvert;
+	predictionValues.predictedViewInvert = predictionValuesInvert.predictedViewInvert;
+
+	return predictionValues;
+}
+
+std::unique_ptr<safePmove_t> StrafeBot::buildDefaultPmove()
+{
+	playerState_s* ps = (playerState_s*)(addr_playerState);
+	std::unique_ptr<safePmove_t> pmove = std::make_unique<safePmove_t>(doroBot->game->getPmoveCurrent(), ps);
+	return pmove;
 }

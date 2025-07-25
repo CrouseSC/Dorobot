@@ -58,6 +58,8 @@ class UI_Menu
 	bool no200_toggle = false;
 	bool progressbar_toggle = true;
 	float yawScriptAngle = 0.f;
+	bool packetInspector_toggle = true;
+	bool switchOnBounce_toggle = false;
 
 	// Default the position to the center of the screen if there is no position in the config file
 	Vec2<float> velo_pos = Vec2<float>(GetSystemMetrics(SM_CXSCREEN) / 2, GetSystemMetrics(SM_CYSCREEN) / 2);

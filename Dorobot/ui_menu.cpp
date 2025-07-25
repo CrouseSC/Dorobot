@@ -80,7 +80,7 @@ void UI_Menu::menu(Dorobot* doroBot)
                 doroBot->saveConfiguration();
             }
             ImGui::SameLine(); ImGui::PushItemWidth(350.f);
-            if (ImGui::SliderFloat("##VeloToJumpAt", &veloToJumpAt, 1.f, 363.f, "%.3f", ImGuiSliderFlags_AlwaysClamp)) {
+            if (ImGui::SliderFloat("##VeloToJumpAt", &veloToJumpAt, 1.f, 364.f, "%.3f", ImGuiSliderFlags_AlwaysClamp)) {
                 doroBot->saveConfiguration();
             }
             if (ImGui::Checkbox("Bhop", &bhop_toggle)) {
@@ -101,6 +101,9 @@ void UI_Menu::menu(Dorobot* doroBot)
                 doroBot->saveConfiguration();
             }
             if (ImGui::Checkbox("Auto 250", &auto250_toggle)) {
+                doroBot->saveConfiguration();
+            }
+            if (ImGui::Checkbox("Switch on bounce", &switchOnBounce_toggle)) {
                 doroBot->saveConfiguration();
             }
             ImGui::Indent(-20.f);
@@ -236,6 +239,8 @@ void UI_Menu::menu(Dorobot* doroBot)
                 }
             }
 
+            ImGui::Checkbox("Packet inspector", &packetInspector_toggle);
+
             ImGui::SetCursorPosY(300.f);
             ImGui::BeginListBox("##Recordings", ImVec2(800, 300));
             for (const Recording& recording : doroBot->recorder->recordings) {
@@ -295,7 +300,14 @@ void UI_Menu::menu(Dorobot* doroBot)
         ImGui::SetNextWindowSize(ImVec2(600, 350));
         if (ImGui::Begin("Editor", &isEditing, ImGuiWindowFlags_NoResize)) {
             Recording* recording = doroBot->recorder->getSelectedRecording();
-            if (ImGui::SliderInt("Frame", &selectedFrame, 1, recording->packets.size())) {
+
+            if (ImGui::Button("<")) {
+                selectedFrame--;
+                if (selectedFrame < 1)
+                    selectedFrame = 1;
+            }
+            ImGui::SameLine();
+            if (ImGui::SliderInt("##Frame", &selectedFrame, 1, recording->packets.size())) {
                 if (selectedFrame < trimFrames.x) {
                     selectedFrame = trimFrames.x;
                 }
@@ -303,17 +315,55 @@ void UI_Menu::menu(Dorobot* doroBot)
                     selectedFrame = trimFrames.y;
                 }
             }
+            ImGui::SameLine();
+            if (ImGui::Button(">")) {
+                selectedFrame++;
+                if (selectedFrame > recording->packets.size())
+                    selectedFrame = recording->packets.size();
+            }
+            ImGui::SameLine();
+            ImGui::Text("Frame");
+
+            if (ImGui::Button("<##2")) {
+                trimFrames.x--;
+                if (trimFrames.x < 1)
+                    trimFrames.x = 1;
+            }
+            ImGui::SameLine();
             if (ImGui::SliderInt("##X", &trimFrames.x, 1, recording->packets.size())) {
                 selectedFrame = trimFrames.x;
                 if (trimFrames.x > trimFrames.y) {
                     trimFrames.y = trimFrames.x;
                 }
             }
+            ImGui::SameLine();
+            if (ImGui::Button(">##2")) {
+                trimFrames.x++;
+                if (trimFrames.x > recording->packets.size())
+                    trimFrames.x = recording->packets.size();
+                if (trimFrames.x > trimFrames.y)
+                    trimFrames.y = trimFrames.x;
+            }
+
+            if (ImGui::Button("<##3")) {
+                trimFrames.y--;
+                if (trimFrames.y < 1)
+                    trimFrames.y = 1;
+                if (trimFrames.y < trimFrames.x)
+                    trimFrames.x = trimFrames.y;
+            }
+            ImGui::SameLine();
             if (ImGui::SliderInt("##Y", &trimFrames.y, 1, recording->packets.size())) {
                 selectedFrame = trimFrames.y;
                 if (trimFrames.y < trimFrames.x) {
                     trimFrames.x = trimFrames.y;
                 }
+            }
+            ImGui::SameLine();
+            if (ImGui::Button(">##3")) {
+                trimFrames.y++;
+                if (trimFrames.y > recording->packets.size())
+                    trimFrames.y = recording->packets.size();
             }
             if (ImGui::Button("Autofix", ImVec2(100, 30))) {
                 autofixRecording();
@@ -326,6 +376,20 @@ void UI_Menu::menu(Dorobot* doroBot)
             }
             ImGui::PopStyleVar();
             ImGui::SetWindowFocus();
+            ImGui::End();
+        }
+        if (packetInspector_toggle && ImGui::Begin("Packet inspector", &packetInspector_toggle)) {
+            CommandPacket selectedPacket = doroBot->recorder->getSelectedRecording()->packets[selectedFrame-1];
+            std::string buttonsText = "Buttons: " + std::to_string(selectedPacket.cmd.buttons);
+            ImGui::Text(buttonsText.c_str());
+            std::string sideText = "Side: " + std::to_string(selectedPacket.cmd.side);
+            ImGui::Text(sideText.c_str());
+            std::string anglesText = "Angles X: " + std::to_string(selectedPacket.cmd.angles[0]) + " Y: " + std::to_string(selectedPacket.cmd.angles[1]);
+            ImGui::Text(anglesText.c_str());
+            std::string veloText = "Velocity: " + std::to_string(selectedPacket.velocity.Length2D());
+            ImGui::Text(veloText.c_str());
+            std::string serverTimeText = "Servertime: " + std::to_string(selectedPacket.cmd.serverTime);
+            ImGui::Text(serverTimeText.c_str());
             ImGui::End();
         }
     }

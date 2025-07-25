@@ -11,19 +11,14 @@ public:
 	int lastFps;
 	void setGameToBotValues();
 	void registerBinds();
-	int bestFps;
-	int bestFpsInvert;
-	bool nextFrameShotRpg;
-	bool nextFrameOnGround;
-	Vec3<float> predictedOptimalView;
-	Vec3<float> predictedOptimalViewInvert;
-	Vec3<float> predictedVeloIncreaseVec;
-	Vec3<float> predictedVeloIncreaseVecInvert;
-	float predictedVeloIncrease;
-	float predictedVeloIncreaseInvert;
+	PredictionValues nextFrameValues;
+	PredictionValues calculateBestAngleAndFps(safePmove_t pmove, bool invert = false);
+	bool strafeBotCycled;
 
 private:
-	void calculateBestAngleAndFps(bool invert = false);
+	PredictionValues calculateBestAngleForGroundStrafe(safePmove_t pmove, bool invert = false);
+	PredictionValues calculateBestAngleAndFpsForBothDirections(const safePmove_t& pmove);
+	std::unique_ptr<safePmove_t> buildDefaultPmove();
 	bool shouldUseStrafeBot();
 	std::vector<int> getFpsList();
 	Dorobot* doroBot;

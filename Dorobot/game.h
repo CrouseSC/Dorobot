@@ -106,6 +106,7 @@ public:
 	std::string getMapName();
     float getVelocityAngle();
 	int callBG_FindWeaponIndexForName(char const* name);
+	bool isDevmap();
 
 private:
     float getDelta(bool invert = false);

@@ -122,6 +122,12 @@ int Game::callBG_FindWeaponIndexForName(char const* name)
 	return reinterpret_cast<int(__cdecl*)(char const*)>(addr_BGFindWeaponIndexForName)(name);
 }
 
+bool Game::isDevmap()
+{
+	return *reinterpret_cast<int*>(0x01288600);
+}
+
+
 float Game::getDelta(bool invert)
 {
 	float accelAngle = 0.f;
@@ -220,7 +226,11 @@ float Game::getOptimalAngle(float g_speed, bool invert)
 
 bool Game::isOnGround()
 {
-	return *reinterpret_cast<int*>(addr_inair) != 1023;
+	auto ps = getPmoveCurrent()->ps;
+	if (ps) {
+		return ps->GroundEntityNum != 1023;
+	}
+	return false;
 }
 
 int Game::getJumpTime()

@@ -19,6 +19,7 @@ void Automatition::registerBinds()
 	doroBot->bindManager->registerBindName("Auto 250", BIND_TYPE_HOLD);
 	doroBot->bindManager->registerBindName("Bhop", BIND_TYPE_HOLD);
 	doroBot->bindManager->registerBindName("Yaw script", BIND_TYPE_HOLD);
+	doroBot->bindManager->registerBindName("Strafe switch on bounce", BIND_TYPE_HOLD);
 }
 
 void Automatition::keyOnW()
@@ -49,18 +50,22 @@ void Automatition::jumpAtVelo(float veloToJumpAt)
 {
 	input_s* input = doroBot->game->getInput_s();
 	usercmd_s* cmd = input->GetUserCmd(input->currentCmdNum);
-	float vel = doroBot->game->getVelocity().Length2D();
-	float vel3D = doroBot->game->getVelocity().Length3D();
-	if (!doroBot->game->isOnGround()) {
-		isJumping = true;
-	}
-	if (vel >= veloToJumpAt && !isJumping) {
-		cmd->buttons |= USERCMD_BUTTONS_JUMP;
-		isJumping = true;
-	}
+	auto ps = doroBot->game->getPmoveCurrent()->ps;
 
-	if (isJumping && vel3D == 0.f) {
-		isJumping = false;
+	if (ps) {
+		float vel = ps->velocity.Length2D();
+		float vel3D = ps->velocity.Length3D();
+		if (!doroBot->game->isOnGround()) {
+			isJumping = true;
+		}
+		if (vel >= veloToJumpAt && !isJumping) {
+			cmd->buttons |= USERCMD_BUTTONS_JUMP;
+			isJumping = true;
+		}
+
+		if (isJumping && vel3D == 0.f) {
+			isJumping = false;
+		}
 	}
 }
 
@@ -87,7 +92,7 @@ void Automatition::rpgLookdown()
 	bool holdingRpg = ps->weapon == doroBot->game->callBG_FindWeaponIndexForName("rpg_mp")
 		|| ps->weapon == doroBot->game->callBG_FindWeaponIndexForName("rpg_sustain_mp");
 
-	if (doroBot->strafeBot->nextFrameShotRpg && holdingRpg && ps->weaponState != 7) {
+	if (doroBot->strafeBot->nextFrameValues.shotRpg && holdingRpg && ps->weaponState != 7) {
 		prevPitch = doroBot->game->getView().x;
 		prevYaw = doroBot->game->getView().y;
 		input_s* input = doroBot->game->getInput_s();
@@ -101,7 +106,7 @@ void Automatition::rpgLookdown()
 		resetPitch = true;
 	}
 
-	shot = doroBot->strafeBot->nextFrameShotRpg;
+	shot = doroBot->strafeBot->nextFrameValues.shotRpg;
 }
 
 void Automatition::rpgJump()
@@ -109,21 +114,25 @@ void Automatition::rpgJump()
 	input_s* input = doroBot->game->getInput_s();
 	usercmd_s* cmd = input->GetUserCmd(input->currentCmdNum);
 
-	if (doroBot->uiMenu->jumpOnRpg_toggle && doroBot->strafeBot->nextFrameShotRpg) {
+	if (doroBot->uiMenu->jumpOnRpg_toggle && doroBot->strafeBot->nextFrameValues.shotRpg) {
 		cmd->buttons |= USERCMD_BUTTONS_JUMP;
 	}
 }
 
 void Automatition::autopara()
 {
+	if (doingAuto250 || doingTransferzoneSpam) {
+		return;
+	}
 	input_s* input = doroBot->game->getInput_s();
 	usercmd_s* cmd = input->GetUserCmd(input->currentCmdNum);
 	if (doroBot->game->isOnGround() || !doroBot->uiMenu->autopara_toggle || doroBot->game->getVelocity().Length2D() > 1500.f) {
 		doingAutopara = false;
 		hasDoneAutoPara = false;
+		forcedDirection = Direction::NONE;
 		return;
 	}
-	if (doroBot->strafeBot->bestFps == 333) {
+	if (doroBot->strafeBot->nextFrameValues.fps == 333) {
 		return;
 	}
 	if (hasDoneAutoPara && doroBot->uiMenu->autoparaOnlyOnce) {
@@ -132,88 +141,92 @@ void Automatition::autopara()
 
 	if (doroBot->bindManager->bindActive("Autopara")) {
 		if (doingAutopara) {
-			if (doroBot->strafeBot->lastFps == 333 && doroBot->strafeBot->bestFpsInvert == 333) {
+			if (doroBot->strafeBot->lastFps == 333 && doroBot->strafeBot->nextFrameValues.fpsInvert == 333) {
 				invertCmdSide(cmd);
-				autoParaDirection = cmd->side;
+				forcedDirection = static_cast<Direction>(cmd->side);
 				doroBot->strafeBot->invertStrafeAfterCycle();
 			}
-			else if (doroBot->strafeBot->bestFpsInvert != 333) {
+			else if (doroBot->strafeBot->nextFrameValues.fpsInvert != 333) {
 				doingAutopara = false;
 				hasDoneAutoPara = true;
+				forcedDirection = Direction::NONE;
 			}
 		}
-		else if (doroBot->strafeBot->lastFps == 333 && doroBot->strafeBot->bestFpsInvert == 333) {
+		else if (doroBot->strafeBot->lastFps == 333 && doroBot->strafeBot->nextFrameValues.fpsInvert == 333) {
 			invertCmdSide(cmd);
-			autoParaDirection = cmd->side;
+			forcedDirection = static_cast<Direction>(cmd->side);
 			doroBot->strafeBot->invertStrafeAfterCycle();
 			doingAutopara = true;
 		}
 	}
 	else {
 		doingAutopara = false;
+		forcedDirection = Direction::NONE;
 	}
 }
 
 void Automatition::autoTransferzone3Spam()
 {
-	bool inTransferZone = veloIncreaseInTransferZone(doroBot->strafeBot->predictedVeloIncreaseVec) && doroBot->strafeBot->bestFps == 250;
-	bool inTransferZoneInvert = veloIncreaseInTransferZone(doroBot->strafeBot->predictedVeloIncreaseVecInvert) && doroBot->strafeBot->bestFpsInvert == 250;
-
 	input_s* input = doroBot->game->getInput_s();
 	usercmd_s* cmd = input->GetUserCmd(input->currentCmdNum);
-	if (doroBot->game->isOnGround() || !doroBot->uiMenu->autoTransferzone3Spam_toggle) {
-		doingTransferzoneSpam = false;
-		hasDoneTransferzoneSpam = false;
-		inTransferZoneLast = inTransferZone;
-		return;
-	}
-	else if (!inTransferZone && !inTransferZoneInvert && !inTransferZoneLast) {
-		doingTransferzoneSpam = false;
-		hasDoneTransferzoneSpam = false;
-		inTransferZoneLast = inTransferZone;
-		return;
-	}
-	if (hasDoneTransferzoneSpam && doroBot->uiMenu->autoTransferzone3SpamOnlyOnce) {
-		inTransferZoneLast = inTransferZone;
+
+	if (doingAutopara || doingAuto250) {
 		return;
 	}
 
-	bool shouldSwitch = (inTransferZoneLast && !inTransferZone && doroBot->strafeBot->bestFpsInvert == 333) || (inTransferZoneInvert && doroBot->strafeBot->bestFps != 333);
+	if (doroBot->game->isOnGround()) {
+		doingTransferzoneSpam = false;
+		forcedDirection = Direction::NONE;
+	}
 
-	//doroBot->uiDebug->addDebuginfo("shouldSwitch", shouldSwitch);
+	bool inTransferZone = veloIncreaseInTransferZone(doroBot->strafeBot->nextFrameValues.predictedVeloIncreaseVec) && doroBot->strafeBot->nextFrameValues.fps == 250;
+	bool inTransferZoneInvert = veloIncreaseInTransferZone(doroBot->strafeBot->nextFrameValues.predictedVeloIncreaseVecInvert) && doroBot->strafeBot->nextFrameValues.fpsInvert == 250;
+
 	if (doroBot->bindManager->bindActive("Auto 232 in transferzone")) {
-		if (doingTransferzoneSpam) {
-			if (shouldSwitch) {
-				invertCmdSide(cmd);
-				transferzoneSpamDirection = cmd->side;
-				doroBot->strafeBot->invertStrafeAfterCycle();
-			}
-		}
-		else if (shouldSwitch) {
-			invertCmdSide(cmd);
-			transferzoneSpamDirection = cmd->side;
-			doroBot->strafeBot->invertStrafeAfterCycle();
+		if (inTransferZoneLast && !inTransferZone && doroBot->strafeBot->nextFrameValues.fpsInvert == 333) {
 			doingTransferzoneSpam = true;
+			invertCmdSide(cmd);
+			forcedDirection = static_cast<Direction>(cmd->side);
+			doroBot->strafeBot->invertStrafeAfterCycle();
+			//doroBot->game->addObituary("SWITCH 1");
+		}
+		else if (doroBot->strafeBot->lastFps == 333 && doroBot->strafeBot->nextFrameValues.fps != 333 && inTransferZoneInvert && !inTransferZone) {
+			doingTransferzoneSpam = true;
+			invertCmdSide(cmd);
+			forcedDirection = static_cast<Direction>(cmd->side);
+			doroBot->strafeBot->invertStrafeAfterCycle();
+			//doroBot->game->addObituary("SWITCH 2");
+		}
+		else if (doroBot->strafeBot->nextFrameValues.fps != 333 && !inTransferZoneInvert && !inTransferZone) {
+			forcedDirection = Direction::NONE;
+			doingTransferzoneSpam = false;
 		}
 	}
 	else {
+		forcedDirection = Direction::NONE;
 		doingTransferzoneSpam = false;
 	}
+
 	inTransferZoneLast = inTransferZone;
 }
 
 void Automatition::auto2Spam()
 {
-	bool inTransferZone = veloIncreaseInTransferZone(doroBot->strafeBot->predictedVeloIncreaseVec) && doroBot->strafeBot->bestFps == 250;
-	bool inTransferZoneInvert = veloIncreaseInTransferZone(doroBot->strafeBot->predictedVeloIncreaseVecInvert) && doroBot->strafeBot->bestFpsInvert == 250;
+	if (doingAutopara || doingTransferzoneSpam) {
+		return;
+	}
+
+	bool inTransferZone = veloIncreaseInTransferZone(doroBot->strafeBot->nextFrameValues.predictedVeloIncreaseVec) && doroBot->strafeBot->nextFrameValues.fps == 250;
+	bool inTransferZoneInvert = veloIncreaseInTransferZone(doroBot->strafeBot->nextFrameValues.predictedVeloIncreaseVecInvert) && doroBot->strafeBot->nextFrameValues.fpsInvert == 250;
 	input_s* input = doroBot->game->getInput_s();
 	usercmd_s* cmd = input->GetUserCmd(input->currentCmdNum);
 	if (doroBot->game->isOnGround() || !doroBot->uiMenu->auto250_toggle) {
 		doingAuto250 = false;
 		hasDoneAuto250 = false;
+		forcedDirection = Direction::NONE;
 		return;
 	}
-	if (doroBot->strafeBot->bestFps != 250) {
+	if (doroBot->strafeBot->nextFrameValues.fps != 250) {
 		return;
 	}
 	if (hasDoneAuto250) {
@@ -222,25 +235,27 @@ void Automatition::auto2Spam()
 
 	if (doroBot->bindManager->bindActive("Auto 250")) {
 		if (doingAuto250) {
-			if (inTransferZone && !inTransferZoneInvert && doroBot->strafeBot->predictedVeloIncreaseInvert > 0) {
+			if (inTransferZone && !inTransferZoneInvert && doroBot->strafeBot->nextFrameValues.predictedVeloIncreaseInvert > 0) {
 				invertCmdSide(cmd);
-				Auto250Direction = cmd->side;
+				forcedDirection = static_cast<Direction>(cmd->side);
 				doroBot->strafeBot->invertStrafeAfterCycle();
 			}
-			else if (doroBot->strafeBot->bestFpsInvert != 250) {
+			else if (doroBot->strafeBot->nextFrameValues.fpsInvert != 250) {
 				doingAuto250 = false;
 				hasDoneAuto250 = true;
+				forcedDirection = Direction::NONE;
 			}
 		}
-		else if (inTransferZone && !inTransferZoneInvert && doroBot->strafeBot->predictedVeloIncreaseInvert > 0) {
+		else if (inTransferZone && !inTransferZoneInvert && doroBot->strafeBot->nextFrameValues.predictedVeloIncreaseInvert > 0) {
 			invertCmdSide(cmd);
-			Auto250Direction = cmd->side;
+			forcedDirection = static_cast<Direction>(cmd->side);
 			doroBot->strafeBot->invertStrafeAfterCycle();
 			doingAuto250 = true;
 		}
 	}
 	else {
 		doingAuto250 = false;
+		forcedDirection = Direction::NONE;
 	}
 }
 
@@ -250,7 +265,7 @@ void Automatition::bhop()
 		if (doroBot->uiMenu->bhop_toggle && doroBot->bindManager->bindActive("Bhop")) {
 			input_s* input = doroBot->game->getInput_s();
 			usercmd_s* cmd = input->GetUserCmd(input->currentCmdNum);
-			if (doroBot->strafeBot->nextFrameOnGround) {  //if were going to be touching the ground on the next frame, release the jump button
+			if (doroBot->strafeBot->nextFrameValues.onGround) {
 				cmd->buttons |= USERCMD_BUTTONS_JUMP;
 			}
 		}
@@ -261,7 +276,8 @@ void Automatition::bhopAfterCycle()
 {
 	if (doroBot->game->isFocused()) {
 		bool isInAir = Dorobot::getInstance()->game->getPmoveCurrent()->ps->GroundEntityNum == 1023;
-		if (isInAir && doroBot->strafeBot->nextFrameOnGround) {
+		if (isInAir && doroBot->strafeBot->nextFrameValues.onGround && doroBot->bindManager->bindActive("Bhop") && doroBot->uiMenu->bhop_toggle) {
+			//if were going to be touching the ground on the next frame, release the jump button
 			input_s* input = doroBot->game->getInput_s();
 			usercmd_s* cmd = input->GetUserCmd(input->currentCmdNum);
 
@@ -280,9 +296,36 @@ void Automatition::yawScript()
 	}
 }
 
+void Automatition::switchOnBounce()
+{
+	input_s* input = doroBot->game->getInput_s();
+	usercmd_s* cmd = input->GetUserCmd(input->currentCmdNum);
+	Lmove lmove = Dorobot::getInstance()->game->getLmove();
+
+	if (doroBot->game->isOnGround() || !(lmove.isLeft || lmove.isRight)) {  //should turn off if player isn't pressing anything
+		bounceSwitchDirection = Direction::NONE;
+		switchedOnBounce = false;
+	}
+
+	auto ps = doroBot->game->getPmoveCurrent()->ps;
+	doroBot->uiDebug->addDebuginfo("pmf", ps->pm_flags);
+	doroBot->uiDebug->addDebuginfo("jz", ps->JumpOriginZ);
+	if (doroBot->bindManager->bindActive("Strafe switch on bounce")) {
+		if (!switchedOnBounce && !doroBot->game->isOnGround() && !(ps->pm_flags & PMF_JUMPING) && ps->JumpOriginZ == 0) {
+			switchedOnBounce = true;
+ 			bounceSwitchDirection = static_cast<Direction>(cmd->side == USERCMD_SIDE_LEFT ? USERCMD_SIDE_RIGHT : USERCMD_SIDE_LEFT);
+		}
+		
+		if (switchedOnBounce && !doroBot->game->isOnGround() && static_cast<Direction>(cmd->side) == bounceSwitchDirection) {  //when the player has switched strafes to the opposite direction
+																				  //eg. hes holding wa before bounce, script switches to wd, player notices and starts holding wd.
+			bounceSwitchDirection = Direction::NONE;
+		}
+	}
+}
+
 void Automatition::cycleAfterStrafebot()
 {
-	if (doroBot->uiMenu->strafebot_toggle) {
+	if (doroBot->uiMenu->strafebot_toggle && doroBot->strafeBot->strafeBotCycled) {
 		autopara();
 		autoTransferzone3Spam();
 		auto2Spam();
@@ -316,13 +359,15 @@ void Automatition::cycle()
 		jumpAtVelo(doroBot->uiMenu->veloToJumpAt);
 	}
 
-	if (doingAutopara) {
-		cmd->side = autoParaDirection;
+	if (doroBot->uiMenu->switchOnBounce_toggle) {
+		switchOnBounce();
 	}
-	if (doingTransferzoneSpam) {
-		cmd->side = transferzoneSpamDirection;
+
+	if (doingAutopara || doingTransferzoneSpam || doingAuto250) {
+		cmd->side = static_cast<char>(forcedDirection);
+		doroBot->uiDebug->addDebuginfo("FORCED", cmd->side);
 	}
-	if (doingAuto250) {
-		cmd->side = Auto250Direction;
+	if (switchedOnBounce && bounceSwitchDirection != Direction::NONE) {  //bounce switch should override other automatition stuffs, mb change later
+		cmd->side = static_cast<char>(bounceSwitchDirection);
 	}
 }

@@ -32,5 +32,10 @@ constexpr int addr_calcView = 0x00451990;
 constexpr int addr_drawxmodelskinneduncached = 0x00646ED4;
 constexpr int addr_drawxmodelskinnedCached = 0x00646870;
 constexpr int addr_BGFindWeaponIndexForName = 0x00416610;
+constexpr int addr_cg_predictPlayerState = 0x00447260;
+constexpr int addr_clientThink_real = 0x004A8500;
+constexpr int addr_isDevmap = 0x01288600;
+constexpr int addr_cg_readNextSnapshot = 0x0044e2b0;
+constexpr int addr_playerState = 0x00794474;
 
 #endif

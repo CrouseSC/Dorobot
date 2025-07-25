@@ -12,32 +12,14 @@ void __fastcall createMove(DWORD eax, DWORD ecx)
 		float velo = Dorobot::getInstance()->game->getPmoveCurrent()->ps->velocity.Length2D();
 		float veloIncrease = (velo - prevVelo) > 0 ? 1 : 0;
 		Dorobot::getInstance()->uiDebug->addDebuginfo("Velocity increase", veloIncrease);
-		/*if (veloIncrease == 0 && velo > 360 && !Dorobot::getInstance()->game->isOnGround()) {
-			Dorobot::getInstance()->game->addObituary("Velocity didn't increase");
-		}*/
+		if (veloIncrease == 0 && velo > 360 && !Dorobot::getInstance()->game->isOnGround()) {
+			//Dorobot::getInstance()->game->addObituary("Velocity didn't increase");
+		}
 		prevVelo = velo;
 	}
+
 	Dorobot::getInstance()->recorder->cycle();
-	input_s* input = (input_s*)0xCC4FF8;
-	usercmd_s* pre = input->GetUserCmd(input->currentCmdNum);
-
 	Dorobot::getInstance()->hookWrapper->hookMap["CreateMove"]->original(createMove)(eax, ecx);
-	usercmd_s* cmd1 = input->GetUserCmd(input->currentCmdNum);
-	usercmd_s* cmd2 = input->GetUserCmd(input->currentCmdNum - 1);
-
-	Dorobot::getInstance()->automatition->cycle();
-	Dorobot::getInstance()->strafeBot->cycle();
-	Dorobot::getInstance()->automatition->cycleAfterStrafebot();
-
-	if (Dorobot::getInstance()->uiMenu->pfps_toggle && Dorobot::getInstance()->game->getVelocity().Length2D() > 0 && !Dorobot::getInstance()->recorder->isPlayingRecording
-		&& !Dorobot::getInstance()->uiMenu->isEditing) {
-		int fps = Dorobot::getInstance()->game->get_fps();
-
-		cmd1->serverTime = cmd2->serverTime;
-		cmd1->serverTime += 1000 / fps;
-	}
-
-	Dorobot::getInstance()->recorder->cycleEditingAfterCreatemove();
 }
 
 int writePacket()

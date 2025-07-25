@@ -115,10 +115,11 @@ void Recorder::cycleEditingAfterCreatemove()
 				baseCmdTime = cmd->serverTime;
 			}
 			atFrame++;
-		}
-		else {
-			atFrame = 0;
-			isPlayingRecording = false;
+
+			if (selectedRecording.packets.size() == atFrame) {
+				atFrame = 0;
+				isPlayingRecording = false;
+			}
 		}
 	}
 }
