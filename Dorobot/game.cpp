@@ -174,6 +174,7 @@ float Game::getDeltaOptimal(float g_speed, bool invert)
 int Game::get_fps()
 {
 	int maxFps = *reinterpret_cast<int*>(addr_maxfps);
+	if (maxFps == 0) maxFps = 333;
 	return maxFps;
 }
 

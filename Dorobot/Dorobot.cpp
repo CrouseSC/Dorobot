@@ -88,6 +88,7 @@ void Dorobot::loadConfiguration() {
     uiMenu->no200_toggle = j.value("no200Toggle", uiMenu->no200_toggle);
     uiMenu->progressbar_toggle = j.value("progressbarToggle", uiMenu->progressbar_toggle);
     uiMenu->packetInspector_toggle = j.value("packetInspectorToggle", uiMenu->packetInspector_toggle);
+    uiMenu->renderTrail_toggle = j.value("renderTrailToggle", uiMenu->renderTrail_toggle);
     uiMenu->switchOnBounce_toggle = j.value("switchOnBounceToggle", uiMenu->switchOnBounce_toggle);
 
 	bindManager->binds = j.value("binds", bindManager->binds);
@@ -164,6 +165,7 @@ anglehelper_color.z, uiMenu->anglehelper_color.w };
     j["progressbarToggle"] = uiMenu->progressbar_toggle;
 	j["packetInspectorToggle"] = uiMenu->packetInspector_toggle;
 	j["switchOnBounceToggle"] = uiMenu->switchOnBounce_toggle;
+	j["renderTrailToggle"] = uiMenu->renderTrail_toggle;
 	j["binds"] = bindManager->binds;
     std::ofstream out(CONFIG);
     out << j.dump(2) << std::endl;

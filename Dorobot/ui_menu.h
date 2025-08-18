@@ -60,6 +60,8 @@ class UI_Menu
 	float yawScriptAngle = 0.f;
 	bool packetInspector_toggle = true;
 	bool switchOnBounce_toggle = false;
+	bool renderTrail_toggle;
+	float tiltValue = 45.f;
 
 	// Default the position to the center of the screen if there is no position in the config file
 	Vec2<float> velo_pos = Vec2<float>(GetSystemMetrics(SM_CXSCREEN) / 2, GetSystemMetrics(SM_CYSCREEN) / 2);

@@ -31,6 +31,53 @@ void StrafeBot::cycle()
 	nextFrameValues.onGround = predicted->pm->ps->GroundEntityNum == 1022;
 }
 
+void StrafeBot::cycleBeforeAutomatition()
+{
+	doTilt();
+}
+
+void StrafeBot::cycleBeforeWritePacket()
+{
+	playerState_s* ps = (playerState_s*)(addr_playerState);
+	input_s* input = Dorobot::getInstance()->game->getInput_s();
+	usercmd_s* cmd = input->GetUserCmd(input->currentCmdNum);
+
+	if (Dorobot::getInstance()->bindManager->bindActive("Nitro") && Dorobot::getInstance()->strafeBot->strafeBotCycled
+		&& Dorobot::getInstance()->game->getVelocity().Length2D() >= 100.f) {
+
+		float newPitch;
+		if (ps->GroundEntityNum == 1022) {
+			newPitch = 85.f;
+		}
+		else {
+			if (Dorobot::getInstance()->game->getVelocity().Length2D() > 2300.f) {
+				newPitch = 39.f;
+			}
+			else {
+				newPitch = 50.f;
+			}
+		}
+		cmd->angles[0] = ANGLE2SHORT(Dorobot::getInstance()->game->toCodAngles(Vec3<float>(newPitch, 0, 0)).x);
+		if (!Dorobot::getInstance()->game->isDevmap()) {
+			auto deltaAngles = Dorobot::getInstance()->game->getDeltaAngles();
+		}
+	}
+}
+
+void StrafeBot::cycleAfterPredictPlayerState()
+{
+	playerState_s* ps = (playerState_s*)(addr_playerState);
+
+	if (Dorobot::getInstance()->bindManager->bindActive("Nitro") && Dorobot::getInstance()->strafeBot->strafeBotCycled
+		&& Dorobot::getInstance()->game->getVelocity().Length2D() >= 300.f) {
+		Dorobot::getInstance()->uiDebug->addDebuginfo("NEWPITCH", ps->ViewAngles.x);
+		ps->ViewAngles.x = tiltOldPitch;
+		ps->ViewAngles.y = Dorobot::getInstance()->game->getOptimalAngle();
+	}
+
+	ps->ViewAngles.z = 0;
+}
+
 void StrafeBot::invertStrafeAfterCycle()
 {
 	input_s* input = doroBot->game->getInput_s();
@@ -60,6 +107,7 @@ void StrafeBot::registerBinds()
 	doroBot->bindManager->registerBindName("Force 333", BIND_TYPE_HOLD);
 	doroBot->bindManager->registerBindName("Force 500", BIND_TYPE_HOLD);
 	doroBot->bindManager->registerBindName("Override bot", BIND_TYPE_HOLD);
+	doroBot->bindManager->registerBindName("Nitro", BIND_TYPE_HOLD);
 }
 
 bool StrafeBot::shouldUseStrafeBot()
@@ -68,6 +116,45 @@ bool StrafeBot::shouldUseStrafeBot()
 	bool isMoving = (lmove.isForward && (lmove.isRight || lmove.isLeft)) || (lmove.isRight || lmove.isLeft);
 	bool isCorrectGameMode = !(doroBot->game->isNocliping() || doroBot->game->isSpectating());
 	return isMoving && isCorrectGameMode && doroBot->game->getPmoveCurrent()->ps;
+}
+
+void StrafeBot::doTilt()
+{
+	input_s* input = (input_s*)0xCC4FF8;
+	usercmd_s* cmd = input->GetUserCmd(input->currentCmdNum);
+	playerState_s* ps = (playerState_s*)(addr_playerState);
+	tiltOldPitch = ps->ViewAngles.x;
+	if (Dorobot::getInstance()->bindManager->bindActive("Nitro") && Dorobot::getInstance()->game->getVelocity().Length2D() >= 300.f) {
+
+		float newPitch;
+		if (ps->GroundEntityNum == 1022) {
+			newPitch = 85.f;
+		}
+		else {
+			if (doroBot->game->getVelocity().Length2D() > 2300.f) {
+				newPitch = 39.f;
+			}
+			else {
+				newPitch = 50.f;
+			}
+		}
+
+		cmd->angles[0] = ANGLE2SHORT(Dorobot::getInstance()->game->toCodAngles(Vec3<float>(newPitch, 0, 0)).x);
+
+		float tiltValue = ps->GroundEntityNum == 1022 ? 84.f : Dorobot::getInstance()->uiMenu->tiltValue;
+		if (Dorobot::getInstance()->game->getLmove().isLeft) {
+			tiltValue = abs(tiltValue);
+		}
+		else {
+			tiltValue = -abs(tiltValue);
+		}
+
+		float tiltValueCod = Dorobot::getInstance()->game->toCodAngles(Vec3<float>(0, 0, tiltValue)).z;
+		cmd->angles[2] = ANGLE2SHORT(tiltValueCod);
+	}
+	else {
+		cmd->angles[2] = ANGLE2SHORT(Dorobot::getInstance()->game->toCodAngles(Vec3<float>(0, 0, 0)).z);
+	}
 }
 
 std::vector<int> StrafeBot::getFpsList()
@@ -117,6 +204,15 @@ PredictionValues StrafeBot::calculateBestAngleAndFps(safePmove_t pmove, bool inv
 		}
 		else {
 			approxOptimal = doroBot->game->getView().y;
+		}
+
+		if (doroBot->bindManager->bindActive("Nitro") && Dorobot::getInstance()->game->getVelocity().Length2D() >= 300.f) {
+			if (doroBot->game->getLmove().isLeft) {
+				approxOptimal += (10.f + i * 1.f);
+			}
+			else {
+				approxOptimal -= (10.f + i * 1.f);
+			}
 		}
 
 		Vec3<float> currentVeloVec = pmove.pm->ps->velocity;
@@ -217,6 +313,15 @@ PredictionValues StrafeBot::calculateBestAngleForGroundStrafe(safePmove_t pmove,
 		}
 		else {
 			approxOptimal = doroBot->game->getView().y;
+		}
+
+		if (pmoveCurrent.pm->ps->velocity.Length2D() >= 300.f && doroBot->bindManager->bindActive("Nitro") && Dorobot::getInstance()->game->getVelocity().Length2D() >= 300.f) {
+			if (Dorobot::getInstance()->game->getLmove().isLeft) {
+				approxOptimal += (10.f + i * 1.f);
+			}
+			else {
+				approxOptimal -= (10.f + i * 1.f);
+			}
 		}
 
 		Vec3<float> currentVeloVec = pmoveCurrent.pm->ps->velocity;

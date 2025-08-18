@@ -24,6 +24,7 @@ void __fastcall createMove(DWORD eax, DWORD ecx)
 
 int writePacket()
 {
+	Dorobot::getInstance()->strafeBot->cycleBeforeWritePacket();
 	return Dorobot::getInstance()->hookWrapper->hookMap["WritePacket"]->original(writePacket)();
 }
 

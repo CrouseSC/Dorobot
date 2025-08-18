@@ -318,6 +318,11 @@ void Recorder::setSelectedRecord()  //TODO: make Dorobot, Recordings folders if 
 
 void Recorder::renderTrail()
 {
+	constexpr float MAX_DIST = 5000.f;
+
+	if (!doroBot->uiMenu->renderTrail_toggle)
+		return;
+
 	if (selectedRecordingPoints.size() < 2)
 		return;
 
@@ -330,10 +335,12 @@ void Recorder::renderTrail()
 		auto& point2 = points[i+1];
 		Vec2<float> screen1;
 		Vec2<float> screen2;
-		bool onScreen = doroBot->game->worldToScreen(point1, &screen1.x, &screen1.y);
-		onScreen = onScreen && doroBot->game->worldToScreen(point2, &screen2.x, &screen2.y);
-		if (onScreen) {
-			ImGui::GetBackgroundDrawList()->AddLine(ImVec2(screen1.x, screen1.y), ImVec2(screen2.x, screen2.y), ImGui::GetColorU32(ImVec4(128, 255, 0, 255)), 2.f);
+		if (point1.Dist(doroBot->game->getOrigin()) < MAX_DIST) {
+			bool onScreen = doroBot->game->worldToScreen(point1, &screen1.x, &screen1.y);
+			onScreen = onScreen && doroBot->game->worldToScreen(point2, &screen2.x, &screen2.y);
+			if (onScreen) {
+				ImGui::GetBackgroundDrawList()->AddLine(ImVec2(screen1.x, screen1.y), ImVec2(screen2.x, screen2.y), ImGui::GetColorU32(ImVec4(128, 255, 0, 255)), 2.f);
+			}
 		}
 	}
 }

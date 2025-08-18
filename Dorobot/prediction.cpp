@@ -187,6 +187,7 @@ void predictPlayerState(int unk)
 	usercmd_s* cmd1 = input->GetUserCmd(input->currentCmdNum);
 	usercmd_s* cmd2 = input->GetUserCmd(input->currentCmdNum - 1);
 
+	Dorobot::getInstance()->strafeBot->cycleBeforeAutomatition();
 	Dorobot::getInstance()->automatition->cycle();
 	Dorobot::getInstance()->strafeBot->cycle();
 	Dorobot::getInstance()->automatition->cycleAfterStrafebot();
@@ -201,6 +202,7 @@ void predictPlayerState(int unk)
 	}
     Dorobot::getInstance()->recorder->cycleEditingAfterCreatemove();
     Dorobot::getInstance()->hookWrapper->hookMap["cg_predictPlayerState"]->original(predictPlayerState)(unk);
+    Dorobot::getInstance()->strafeBot->cycleAfterPredictPlayerState();
 }
 
 

@@ -111,6 +111,9 @@ void UI_Menu::menu(Dorobot* doroBot)
         }
         case MISC:
         {
+            /*if (ImGui::SliderFloat("Tilt value", &tiltValue, -180.f, 180.f)) {
+                doroBot->saveConfiguration();
+            }*/
             if (ImGui::Checkbox("Speedometer", &velo_meter)) {
                 doroBot->saveConfiguration();
             }
@@ -240,6 +243,7 @@ void UI_Menu::menu(Dorobot* doroBot)
             }
 
             ImGui::Checkbox("Packet inspector", &packetInspector_toggle);
+            ImGui::Checkbox("Render trail", &renderTrail_toggle);
 
             ImGui::SetCursorPosY(300.f);
             ImGui::BeginListBox("##Recordings", ImVec2(800, 300));
@@ -380,7 +384,7 @@ void UI_Menu::menu(Dorobot* doroBot)
         }
 
         if (packetInspector_toggle) {
-            ImGui::SetNextWindowSize(ImVec2(550, 275));
+            ImGui::SetNextWindowSize(ImVec2(650, 275));
             if (ImGui::Begin("Packet inspector", &packetInspector_toggle)) {
                 CommandPacket selectedPacket = doroBot->recorder->getSelectedRecording()->packets[selectedFrame - 1];
                 std::string buttonsText = "Buttons: " + std::to_string(selectedPacket.cmd.buttons);
@@ -389,7 +393,7 @@ void UI_Menu::menu(Dorobot* doroBot)
                 ImGui::Text(sideText.c_str());
                 std::string forwardText = "Forward: " + std::to_string(selectedPacket.cmd.forward);
                 ImGui::Text(forwardText.c_str());
-                std::string anglesText = "Angles X: " + std::to_string(selectedPacket.cmd.angles[0]) + " Y: " + std::to_string(selectedPacket.cmd.angles[1]);
+                std::string anglesText = "Angles X: " + std::to_string(selectedPacket.normalView.x) + " Y: " + std::to_string(selectedPacket.normalView.y);
                 ImGui::Text(anglesText.c_str());
                 std::string originText = "Origin X: " + std::to_string(selectedPacket.origin.x) + " Y: " + std::to_string(selectedPacket.origin.y) + " Z: " + std::to_string(selectedPacket.origin.z);
                 ImGui::Text(originText.c_str());
