@@ -324,6 +324,7 @@ void Render::endScene(LPDIRECT3DDEVICE9 dev)
 	}
 	if (doroBot->recorder) {
 		doroBot->recorder->renderProgressbar();
+		doroBot->recorder->renderTrail();
 	}
 	if (doroBot->elebot) {
 		doroBot->elebot->renderMarkers();

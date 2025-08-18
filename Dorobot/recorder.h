@@ -1,5 +1,6 @@
 #pragma once
 #include <filesystem>
+#include <mutex>
 #include "pch.h"
 #include "ringbuffer.hpp"
 #include "recording.h"
@@ -26,6 +27,7 @@ public:
 	void setSelectedRecording(const Recording& recording);
 	void registerBinds();
 	void renderProgressbar();
+	void renderTrail();
 	bool isPlayingRecording = false;
 	static constexpr char recordFolderPath[] = "Dorobot/Recordings/";
 	static constexpr char recordingExtension[] = ".doro";
@@ -38,5 +40,9 @@ private:
 	Recording selectedRecording;
 	int baseCmdTime = 0;
 	void setSelectedRecord();
+	void updateSelectedRecordingPoints();
+
+	std::mutex pointMutex;
+	std::vector<Vec3<float>> selectedRecordingPoints;
 
 };

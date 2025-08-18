@@ -144,6 +144,7 @@ Recording* Recorder::getSelectedRecording()
 void Recorder::autofixRecording(Vec2<int> trimFrames)
 {
 	selectedRecording.packets = std::vector<CommandPacket>(selectedRecording.packets.begin() + trimFrames.x, selectedRecording.packets.begin() + trimFrames.y + 1);
+	updateSelectedRecordingPoints();
 }
 
 Vec2<int> Recorder::autoTrimRecording(int right)
@@ -300,6 +301,7 @@ void Recorder::saveRecord()
 void Recorder::setSelectedRecording(const Recording& recording)
 {
 	selectedRecording = recording;
+	updateSelectedRecordingPoints();
 }
 
 void Recorder::setSelectedRecord()  //TODO: make Dorobot, Recordings folders if they don't exist probably right after dll entry
@@ -311,4 +313,36 @@ void Recorder::setSelectedRecord()  //TODO: make Dorobot, Recordings folders if 
 	recording.packets = packets.readAll();
 
 	selectedRecording = recording;
+	updateSelectedRecordingPoints();
+}
+
+void Recorder::renderTrail()
+{
+	if (selectedRecordingPoints.size() < 2)
+		return;
+
+	std::unique_lock<std::mutex> lock(pointMutex);
+	std::vector<Vec3<float>> points = selectedRecordingPoints;  //the vector can be accessed from multiple threads so we make a copy
+	lock.unlock();
+
+	for (int i = 0; i < points.size()-1; i++) {
+		auto& point1 = points[i];
+		auto& point2 = points[i+1];
+		Vec2<float> screen1;
+		Vec2<float> screen2;
+		bool onScreen = doroBot->game->worldToScreen(point1, &screen1.x, &screen1.y);
+		onScreen = onScreen && doroBot->game->worldToScreen(point2, &screen2.x, &screen2.y);
+		if (onScreen) {
+			ImGui::GetBackgroundDrawList()->AddLine(ImVec2(screen1.x, screen1.y), ImVec2(screen2.x, screen2.y), ImGui::GetColorU32(ImVec4(128, 255, 0, 255)), 2.f);
+		}
+	}
+}
+
+void Recorder::updateSelectedRecordingPoints()
+{
+	std::lock_guard<std::mutex> lock(pointMutex);
+	selectedRecordingPoints.clear();
+	for (const CommandPacket& packet : selectedRecording.packets) {
+		selectedRecordingPoints.push_back(packet.origin);
+	}
 }

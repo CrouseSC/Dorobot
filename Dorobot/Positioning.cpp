@@ -45,8 +45,8 @@ bool Positioning::moveToPosition(const Vec2<float>& position, float errorRoom)
 	constexpr int PER_FRAMES = 1;
 	static bool doneForward{};
 
-	if (dist >= errorRoom) {
-		if ((dist < 27.5f && doneForward) || (dist < 2.5f)) {
+	if (dist >= errorRoom && ( (dist < 27.5f && doroBot->game->getVelocity().Length2D() < 20.f) || dist >= 27.5f) ) {
+		if ( (dist < 27.5f && doneForward) || (dist < 2.5f) ) {
 			doroBot->game->setFps(500);
 			if ((doroBot->game->getVelocity().Length2D() == 0) && (frameCounter % PER_FRAMES == 0)) {
 				turnToPosition(position, 180);
