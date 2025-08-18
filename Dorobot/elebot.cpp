@@ -38,6 +38,10 @@ void Elebot::registerBinds()
 void Elebot::renderMarkers()
 {
 	auto pos = traceResults.hitposReal;
+	if (pos == Vec3<float>(0, 0, 0)) {  //default marker position
+		return;
+	}
+
 	Vec2<float> screen;
 	constexpr float SCALE_FACTOR = 10.f;
 	constexpr float MAX_DIST = 2000.f;
@@ -77,8 +81,11 @@ void Elebot::elevate()
 		if ((axis == AXIS_X && pos.x == doroBot->game->getOrigin().x) || (axis == AXIS_Y && pos.y == doroBot->game->getOrigin().y)) {
 			usercmd_s* cmd = doroBot->game->getInput_s()->GetUserCmd(doroBot->game->getInput_s()->currentCmdNum);
 			cmd->buttons = 0;  //uncrouch
+			doingEle = false;
 		}
-		doingEle = doroBot->positioning->moveToElePosition(Vec2<float>(pos.x, pos.y), axis);
+		else {
+			doingEle = doroBot->positioning->moveToElePosition(Vec2<float>(pos.x, pos.y), axis);
+		}
 	}
 	else {
 		doingEle = false;

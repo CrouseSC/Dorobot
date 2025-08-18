@@ -173,12 +173,16 @@ bool Positioning::moveToElePosition(const Vec2<float>& position, Axis axis)
 
 	Vec3<float> normalView = doroBot->game->getView();
 	normalView.y = bestAngle;
-	cmd->serverTime = ps->commandTime + 1000.f / bestFps;
+
+	input_s* input = (input_s*)0xCC4FF8;
+	usercmd_s* oldCmd = input->GetUserCmd(input->currentCmdNum - 1);
+	cmd->serverTime = oldCmd->serverTime;
+	cmd->serverTime += 1000 / bestFps;
 	cmd->angles[1] = ANGLE2SHORT(doroBot->game->toCodAngles(Vec3<float>(0, bestAngle, 0)).y);
 	//doroBot->game->setNormalView(normalView);
 
-	/*doroBot->game->addObituary(("MOVED FPS " + std::to_string(bestFps) + " DIST " + std::to_string(bestDist)
-		+ " POSX " + std::to_string(newPos.x) + " POSY " + std::to_string(newPos.y) + " BESTANGLE " + std::to_string(bestAngle)).c_str());*/
+	doroBot->game->addObituary(("MOVED FPS " + std::to_string(bestFps) + " DIST " + std::to_string(bestDist)
+		+ " POSX " + std::to_string(newPos.x) + " POSY " + std::to_string(newPos.y) + " BESTANGLE " + std::to_string(bestAngle)).c_str());
 
 	return true;
 }
