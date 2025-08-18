@@ -105,6 +105,7 @@ void StrafeBot::registerBinds()
 {
 	doroBot->bindManager->registerBindName("15 slide", BIND_TYPE_HOLD);
 	doroBot->bindManager->registerBindName("Force 333", BIND_TYPE_HOLD);
+	doroBot->bindManager->registerBindName("Force 250", BIND_TYPE_HOLD);
 	doroBot->bindManager->registerBindName("Force 500", BIND_TYPE_HOLD);
 	doroBot->bindManager->registerBindName("Override bot", BIND_TYPE_HOLD);
 	doroBot->bindManager->registerBindName("Nitro", BIND_TYPE_HOLD);
@@ -170,6 +171,9 @@ std::vector<int> StrafeBot::getFpsList()
 
 	if (doroBot->bindManager->bindActive("Force 333")) {
 		fpsList = { 333 };
+	}
+	else if (doroBot->bindManager->bindActive("Force 250")) {
+		fpsList = { 250 };
 	}
 	else if (doroBot->bindManager->bindActive("Force 500")) {
 		fpsList = { 500 };
