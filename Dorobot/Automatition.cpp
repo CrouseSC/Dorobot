@@ -325,7 +325,8 @@ void Automatition::switchOnBounce()
 
 void Automatition::cycleAfterStrafebot()
 {
-	if (doroBot->uiMenu->strafebot_toggle && doroBot->strafeBot->strafeBotCycled && !doroBot->bindManager->bindActive("Nitro")) {
+	if (doroBot->uiMenu->strafebot_toggle && doroBot->strafeBot->strafeBotCycled &&
+		(!doroBot->bindManager->bindActive("Nitro") || !Dorobot::getInstance()->uiMenu->tiltStrafe_toggle) ) {
 		autopara();
 		autoTransferzone3Spam();
 		auto2Spam();

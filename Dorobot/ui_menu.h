@@ -61,6 +61,7 @@ class UI_Menu
 	bool packetInspector_toggle = true;
 	bool switchOnBounce_toggle = false;
 	bool renderTrail_toggle;
+	bool tiltStrafe_toggle;
 	float tiltValue = 45.f;
 
 	// Default the position to the center of the screen if there is no position in the config file

@@ -10,6 +10,11 @@ TextureManager::~TextureManager()
 {
 }
 
+void TextureManager::clear()
+{
+	textures.clear();
+}
+
 void TextureManager::loadTextureFromFile(const std::string& name, const std::string& filePath)
 {
 	TextureWrapper* texture = new TextureWrapper();

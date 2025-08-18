@@ -106,6 +106,9 @@ void UI_Menu::menu(Dorobot* doroBot)
             if (ImGui::Checkbox("Switch on bounce", &switchOnBounce_toggle)) {
                 doroBot->saveConfiguration();
             }
+            if (ImGui::Checkbox("Tilt strafe", &tiltStrafe_toggle)) {
+                doroBot->saveConfiguration();
+            }
             ImGui::Indent(-20.f);
             break;
         }

@@ -17,6 +17,7 @@ public:
 	void addCallback(RenderCallback);
 	void SetupImGuiStyle2();
 	bool firstRunStyle = true;
+	bool assetsInit = false;
 
 private:
 	Dorobot* doroBot;

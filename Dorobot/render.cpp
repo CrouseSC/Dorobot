@@ -35,9 +35,9 @@ HRESULT __stdcall Reset_Hook(LPDIRECT3DDEVICE9 pDevice, D3DPRESENT_PARAMETERS* p
 {
 
 	Dorobot* doroBot = Dorobot::getInstance();
+	doroBot->render->assetsInit = false;
 	if (doroBot && doroBot->hookWrapper && doroBot->render)
 	{
-
 		auto orig = doroBot->hookWrapper->hookMap["Reset"]->original(Reset_Hook);
 		doroBot->render->invalidateObjects(pDevice);
 		HRESULT rval = orig(pDevice, pPresentationParameters);
@@ -281,19 +281,13 @@ void Render::initImgui(LPDIRECT3DDEVICE9 dev)
 
 void __cdecl Render::engineDraw()
 {
-	Dorobot* doroBot = Dorobot::getInstance();
-
-	if(doroBot->game->isConnected())
-	{
-		static bool assetsInit = false;  //we have to call this here, because loading a mod / joining a game does something with dx9 that nukes our textures.
-		if (!assetsInit) {
-			doroBot->loadAssets();
-			doroBot->elebot->setupAnimation();
-			assetsInit = true;
-		}
-		if (doroBot->uiMenu->lines_toggle) {
-			doroBot->ui90Lines->render();
-		}
+	if (!assetsInit) {
+		doroBot->loadAssets();
+		doroBot->elebot->setupAnimation();
+		assetsInit = true;
+	}
+	if (doroBot->uiMenu->lines_toggle) {
+		doroBot->ui90Lines->render();
 	}
 }
 

@@ -89,6 +89,7 @@ void Dorobot::loadConfiguration() {
     uiMenu->progressbar_toggle = j.value("progressbarToggle", uiMenu->progressbar_toggle);
     uiMenu->packetInspector_toggle = j.value("packetInspectorToggle", uiMenu->packetInspector_toggle);
     uiMenu->renderTrail_toggle = j.value("renderTrailToggle", uiMenu->renderTrail_toggle);
+    uiMenu->tiltStrafe_toggle = j.value("tiltStrafeToggle", uiMenu->tiltStrafe_toggle);
     uiMenu->switchOnBounce_toggle = j.value("switchOnBounceToggle", uiMenu->switchOnBounce_toggle);
 
 	bindManager->binds = j.value("binds", bindManager->binds);
@@ -166,6 +167,7 @@ anglehelper_color.z, uiMenu->anglehelper_color.w };
 	j["packetInspectorToggle"] = uiMenu->packetInspector_toggle;
 	j["switchOnBounceToggle"] = uiMenu->switchOnBounce_toggle;
 	j["renderTrailToggle"] = uiMenu->renderTrail_toggle;
+	j["tiltStrafeToggle"] = uiMenu->tiltStrafe_toggle;
 	j["binds"] = bindManager->binds;
     std::ofstream out(CONFIG);
     out << j.dump(2) << std::endl;
@@ -185,6 +187,8 @@ void Dorobot::loadAssets()
         saveConfiguration();
         return;
     }
+
+    Dorobot::getInstance()->textureManager->clear();
 
     auto spriteSheets = j["spritesheets"];
     for (auto& spriteSheet : spriteSheets) {
