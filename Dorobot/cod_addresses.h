@@ -37,5 +37,6 @@ constexpr int addr_clientThink_real = 0x004A8500;
 constexpr int addr_isDevmap = 0x01288600;
 constexpr int addr_cg_readNextSnapshot = 0x0044e2b0;
 constexpr int addr_playerState = 0x00794474;
+constexpr int addr_cg_trace = 0x00459EF0;
 
 #endif

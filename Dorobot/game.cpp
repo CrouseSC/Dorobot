@@ -41,8 +41,8 @@ Vec3<float> Game::getView()
 
 Vec3<float> Game::getOrigin()
 {
-	Vec3<float> pos = *(Vec3<float>*)addr_position;
-	return pos;
+	playerState_s* ps = (playerState_s*)(addr_playerState);
+	return ps->origin;
 }
 
 Vec3<float> Game::getVelocity()

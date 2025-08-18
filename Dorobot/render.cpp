@@ -283,9 +283,17 @@ void __cdecl Render::engineDraw()
 {
 	Dorobot* doroBot = Dorobot::getInstance();
 
-	if(doroBot->game->isConnected() && doroBot->uiMenu->lines_toggle)
+	if(doroBot->game->isConnected())
 	{
-		doroBot->ui90Lines->render();
+		static bool assetsInit = false;  //we have to call this here, because loading a mod / joining a game does something with dx9 that nukes our textures.
+		if (!assetsInit) {
+			doroBot->loadAssets();
+			doroBot->elebot->setupAnimation();
+			assetsInit = true;
+		}
+		if (doroBot->uiMenu->lines_toggle) {
+			doroBot->ui90Lines->render();
+		}
 	}
 }
 
@@ -316,6 +324,9 @@ void Render::endScene(LPDIRECT3DDEVICE9 dev)
 	}
 	if (doroBot->recorder) {
 		doroBot->recorder->renderProgressbar();
+	}
+	if (doroBot->elebot) {
+		doroBot->elebot->renderMarkers();
 	}
 
 	ImGui::EndFrame();

@@ -27,6 +27,7 @@
 #include "positioning.h"
 #include "bind_manager.h"
 #include "session_manager.h"
+#include "elebot.h"
 
 extern "C" 
 {
@@ -38,6 +39,7 @@ class Dorobot
 public:
 	void loadConfiguration();
 	void saveConfiguration();
+	void loadAssets();
 	Dorobot();
 	~Dorobot();
 
@@ -63,6 +65,7 @@ public:
 	std::shared_ptr<Positioning> positioning;
 	std::shared_ptr<BindManager> bindManager;
 	std::shared_ptr<SessionManager> sessionManager;
+	std::shared_ptr<Elebot> elebot;
 
 	ImFont* toxicFont;
 	ImFont* sepFont;
@@ -74,6 +77,9 @@ public:
 	bool bindClose(UINT key_state);
 	static Dorobot* dorobot;
 	static Dorobot* getInstance();
+	const char* CONFIG = "Dorobot/doroconfig.json";
+	const char* ASSETINFO = "Dorobot/Assets/assetinfo.json";
+
 
 private:
 	void setupFolders();

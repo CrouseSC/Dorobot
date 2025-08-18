@@ -26,11 +26,15 @@ void UI_Debug::renderAngles()
 	usercmd_s cmd = *input->GetUserCmd(input->currentCmdNum);
 
 	ImGui::SetNextWindowBgAlpha(0.5f);
-	ImGui::SetNextWindowSize(ImVec2(200, 100));
+	ImGui::SetNextWindowSize(ImVec2(250, 200));
 	ImGui::Begin("Angles", 0, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize);
 	ImGui::Text( ("Pitch: " + std::to_string(Dorobot::getInstance()->game->getView().x)).c_str() );
 	ImGui::Text( ("Yaw: " + std::to_string(Dorobot::getInstance()->game->getView().y)).c_str() );
 	ImGui::Text( ("Buttons: " + std::to_string(cmd.buttons)).c_str() );
+	ImGui::Text( ("Pos X: " + std::to_string(Dorobot::getInstance()->game->getOrigin().x)).c_str() );
+	ImGui::Text( ("Pos Y: " + std::to_string(Dorobot::getInstance()->game->getOrigin().y)).c_str() );
+	ImGui::Text( ("Pos Z: " + std::to_string(Dorobot::getInstance()->game->getOrigin().z)).c_str() );
+
 	ImGui::End();
 }
 

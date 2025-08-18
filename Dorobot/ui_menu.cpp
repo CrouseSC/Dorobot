@@ -378,19 +378,29 @@ void UI_Menu::menu(Dorobot* doroBot)
             ImGui::SetWindowFocus();
             ImGui::End();
         }
-        if (packetInspector_toggle && ImGui::Begin("Packet inspector", &packetInspector_toggle)) {
-            CommandPacket selectedPacket = doroBot->recorder->getSelectedRecording()->packets[selectedFrame-1];
-            std::string buttonsText = "Buttons: " + std::to_string(selectedPacket.cmd.buttons);
-            ImGui::Text(buttonsText.c_str());
-            std::string sideText = "Side: " + std::to_string(selectedPacket.cmd.side);
-            ImGui::Text(sideText.c_str());
-            std::string anglesText = "Angles X: " + std::to_string(selectedPacket.cmd.angles[0]) + " Y: " + std::to_string(selectedPacket.cmd.angles[1]);
-            ImGui::Text(anglesText.c_str());
-            std::string veloText = "Velocity: " + std::to_string(selectedPacket.velocity.Length2D());
-            ImGui::Text(veloText.c_str());
-            std::string serverTimeText = "Servertime: " + std::to_string(selectedPacket.cmd.serverTime);
-            ImGui::Text(serverTimeText.c_str());
-            ImGui::End();
+
+        if (packetInspector_toggle) {
+            ImGui::SetNextWindowSize(ImVec2(550, 275));
+            if (ImGui::Begin("Packet inspector", &packetInspector_toggle)) {
+                CommandPacket selectedPacket = doroBot->recorder->getSelectedRecording()->packets[selectedFrame - 1];
+                std::string buttonsText = "Buttons: " + std::to_string(selectedPacket.cmd.buttons);
+                ImGui::Text(buttonsText.c_str());
+                std::string sideText = "Side: " + std::to_string(selectedPacket.cmd.side);
+                ImGui::Text(sideText.c_str());
+                std::string forwardText = "Forward: " + std::to_string(selectedPacket.cmd.forward);
+                ImGui::Text(forwardText.c_str());
+                std::string anglesText = "Angles X: " + std::to_string(selectedPacket.cmd.angles[0]) + " Y: " + std::to_string(selectedPacket.cmd.angles[1]);
+                ImGui::Text(anglesText.c_str());
+                std::string originText = "Origin X: " + std::to_string(selectedPacket.origin.x) + " Y: " + std::to_string(selectedPacket.origin.y) + " Z: " + std::to_string(selectedPacket.origin.z);
+                ImGui::Text(originText.c_str());
+                std::string veloText = "Velocity X: " + std::to_string(selectedPacket.velocity.x) + " Y: " + std::to_string(selectedPacket.velocity.y) + " Z: " + std::to_string(selectedPacket.velocity.z);
+                ImGui::Text(veloText.c_str());
+                std::string veloText2 = "Velocity: " + std::to_string(selectedPacket.velocity.Length2D());
+                ImGui::Text(veloText2.c_str());
+                std::string serverTimeText = "Servertime: " + std::to_string(selectedPacket.cmd.serverTime);
+                ImGui::Text(serverTimeText.c_str());
+                ImGui::End();
+            }
         }
     }
 }

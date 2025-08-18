@@ -73,6 +73,7 @@ public:
 	void PmoveSingle(pmove_t* pm);
 	void predictMove(int fps, float angle, bool invert, safePmove_t& pmove);
 	std::vector<playerState_s*> predictFramesAhead();
+	std::unique_ptr<safePmove_t> buildDefaultPmove();
 
 	playerState_s realPlayerState;  //for devmap use only, we use this to sync server/client for perfect prediction
 

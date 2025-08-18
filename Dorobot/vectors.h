@@ -51,6 +51,7 @@ struct Vec3
 	inline Vec3 operator - (const Vec3& v) { return Vec3(x - v.x, y - v.y, z - v.z); }
 	inline Vec3 operator / (const Vec3& v) { return Vec3(x / v.x, y / v.y, z / v.z); }
 	inline Vec3 operator * (const Vec3& v) { return Vec3(x * v.x, y * v.y, z * v.z); }
+	inline Vec3 operator * (double c) { return Vec3(x * c, y * c, z * c); }
 	inline bool operator == (const Vec3& v) { return x == v.x && y == v.y && z == v.z; }
 	inline bool operator != (const Vec3& v) { return x != v.x || y != v.y || z != v.z; }
 	inline T& operator [] (int index) { if (index == 0) return x;  if (index == 1) return y; if (index == 2) return z; return z; }
@@ -58,6 +59,7 @@ struct Vec3
 	inline Vec3& operator += (const Vec3& v) { this->x += v.x; this->y += v.y; this->z += v.z; return *this; }
 	inline Vec3& operator -= (const Vec3& v) { this->x -= v.x; this->y -= v.y; this->z -= v.z; return *this; }
 	inline Vec3& operator *= (const Vec3& v) { this->x *= v.x; this->y *= v.y; this->z *= v.z; return *this; }
+	inline Vec3& operator *= (double c) { this->x *= c; this->y *= c; this->z *= c; return *this; }
 	inline Vec3& operator /= (const Vec3& v) { this->x /= v.x; this->y /= v.y; this->z /= v.z; return *this; }
 
 	inline std::string toString() { std::stringstream ss; std::setprecision(6); ss << std::fixed << x << " " << y << " " << z; return ss.str(); }

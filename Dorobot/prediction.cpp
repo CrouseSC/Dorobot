@@ -163,7 +163,7 @@ void clientThink_real(gentity_s* ent) noexcept  //usercmd_s* in: EAX
     }
 
     Dorobot::getInstance()->prediction->realPlayerState = ent->client->ps;
-    Dorobot::getInstance()->uiDebug->addDebuginfo("clientThink_real DeltaY", ent->client->ps.DeltaAngles.y);
+    //Dorobot::getInstance()->uiDebug->addDebuginfo("clientThink_real DeltaY", ent->client->ps.DeltaAngles.y);
 
     _asm {
         mov esp, ebp
@@ -175,7 +175,7 @@ void clientThink_real(gentity_s* ent) noexcept  //usercmd_s* in: EAX
 void predictPlayerState(int unk)
 {
     playerState_s* ps = (playerState_s*)(addr_playerState);
-    Dorobot::getInstance()->uiDebug->addDebuginfo("predictPlayerState DeltaY", ps->DeltaAngles.y);
+    //Dorobot::getInstance()->uiDebug->addDebuginfo("predictPlayerState DeltaY", ps->DeltaAngles.y);
 
     if ((!Dorobot::getInstance()->game->isConnected() || Dorobot::getInstance()->sessionManager->isJH || Dorobot::getInstance()->sessionManager->isVCJ)
         || !Dorobot::getInstance()->game->getPmoveCurrent()->ps) {
@@ -190,9 +190,10 @@ void predictPlayerState(int unk)
 	Dorobot::getInstance()->automatition->cycle();
 	Dorobot::getInstance()->strafeBot->cycle();
 	Dorobot::getInstance()->automatition->cycleAfterStrafebot();
+	Dorobot::getInstance()->elebot->cycle();
 
 	if (Dorobot::getInstance()->uiMenu->pfps_toggle && Dorobot::getInstance()->game->getVelocity().Length2D() > 0 && !Dorobot::getInstance()->recorder->isPlayingRecording
-		&& !Dorobot::getInstance()->uiMenu->isEditing) {
+		&& !Dorobot::getInstance()->uiMenu->isEditing && !Dorobot::getInstance()->elebot->doingEle) {
 		int fps = Dorobot::getInstance()->game->get_fps();
 
 		cmd1->serverTime = cmd2->serverTime;
@@ -212,6 +213,14 @@ snapshot_s* cg_readNextSnapshot()
 
     return snap;
 }
+
+std::unique_ptr<safePmove_t> Prediction::buildDefaultPmove()
+{
+    playerState_s* ps = (playerState_s*)(addr_playerState);
+    std::unique_ptr<safePmove_t> pmove = std::make_unique<safePmove_t>(doroBot->game->getPmoveCurrent(), ps);
+    return pmove;
+}
+
 
 Prediction::Prediction(Dorobot* dorobot)
 {

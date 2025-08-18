@@ -120,8 +120,22 @@ namespace mm
 			up->z = cr * cp;
 		}
 	}
+
 	float toRadians(float angle)
 	{
 		return angle * (PI / 180);
+	}
+
+	Vec3<float> sphericalToCartesian(float magnitude, float yawDeg, float pitchDeg)
+	{
+		// Convert degrees to radians
+		float yaw = yawDeg * static_cast<float>(M_PI) / 180.0f;
+		float pitch = pitchDeg * static_cast<float>(M_PI) / 180.0f;
+
+		float x = magnitude * cosf(pitch) * cosf(yaw);
+		float y = magnitude * cosf(pitch) * sinf(yaw);
+		float z = magnitude * sinf(pitch);
+
+		return Vec3<float>(x, y, z);
 	}
 }

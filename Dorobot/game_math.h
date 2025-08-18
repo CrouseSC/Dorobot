@@ -14,4 +14,6 @@ namespace mm
 	void angle_vectors(Vec3<float> angles, float* forward, float* right, float* up);
 	void angle_vectors(Vec3<float> angles, Vec3<float>* forward, Vec3<float>* right, Vec3<float>* up);
 	float toRadians(float angle);
+	// Converts spherical coordinates (magnitude, yaw, pitch) to Cartesian (x, y, z)
+	Vec3<float> sphericalToCartesian(float magnitude, float yawDeg, float pitchDeg);
 }

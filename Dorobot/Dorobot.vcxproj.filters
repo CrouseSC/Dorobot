@@ -118,6 +118,9 @@
     <ClCompile Include="session_manager.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="elebot.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="dorobot.h">
@@ -256,6 +259,9 @@
       <Filter>Header</Filter>
     </ClInclude>
     <ClInclude Include="session_manager.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="elebot.h">
       <Filter>Header</Filter>
     </ClInclude>
   </ItemGroup>

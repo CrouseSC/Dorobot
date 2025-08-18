@@ -18,7 +18,6 @@ public:
 private:
 	PredictionValues calculateBestAngleForGroundStrafe(safePmove_t pmove, bool invert = false);
 	PredictionValues calculateBestAngleAndFpsForBothDirections(const safePmove_t& pmove);
-	std::unique_ptr<safePmove_t> buildDefaultPmove();
 	bool shouldUseStrafeBot();
 	std::vector<int> getFpsList();
 	Dorobot* doroBot;

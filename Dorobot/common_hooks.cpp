@@ -11,7 +11,7 @@ void __fastcall createMove(DWORD eax, DWORD ecx)
 		static float prevVelo = Dorobot::getInstance()->game->getPmoveCurrent()->ps->velocity.Length2D();
 		float velo = Dorobot::getInstance()->game->getPmoveCurrent()->ps->velocity.Length2D();
 		float veloIncrease = (velo - prevVelo) > 0 ? 1 : 0;
-		Dorobot::getInstance()->uiDebug->addDebuginfo("Velocity increase", veloIncrease);
+		//Dorobot::getInstance()->uiDebug->addDebuginfo("Velocity increase", veloIncrease);
 		if (veloIncrease == 0 && velo > 360 && !Dorobot::getInstance()->game->isOnGround()) {
 			//Dorobot::getInstance()->game->addObituary("Velocity didn't increase");
 		}

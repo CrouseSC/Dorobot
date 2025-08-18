@@ -3,7 +3,6 @@
 #include <include/json.hpp>
 
 using json = nlohmann::json;
-static const char* CONFIG = "doroconfig.json";
 
 //pretend its an audio codec for the miles sound system
 bool __stdcall RIB_Main(int a, int b)
@@ -170,6 +169,32 @@ anglehelper_color.z, uiMenu->anglehelper_color.w };
     out << j.dump(2) << std::endl;
 }
 
+void Dorobot::loadAssets()
+{
+    std::ifstream file(ASSETINFO);
+    if (!file.is_open()) { saveConfiguration(); return; }
+
+    json j;
+    try {
+        file >> j;
+    }
+    catch (const std::exception& e) {
+        std::cerr << "Failed to parse assetinfo: " << e.what() << std::endl;
+        saveConfiguration();
+        return;
+    }
+
+    auto spriteSheets = j["spritesheets"];
+    for (auto& spriteSheet : spriteSheets) {
+        std::string name = spriteSheet["name"];
+        std::string extension = spriteSheet["extension"];
+        int frames = spriteSheet["frames"];
+        int delay = spriteSheet["delay"];
+        Vec2<int> dimensions(spriteSheet["dimensions"][0].get<int>(), spriteSheet["dimensions"][1].get<int>());
+        Dorobot::getInstance()->textureManager->loadSpriteSheet(name, name + "." + extension, frames, delay, dimensions);
+    }
+}
+
 Dorobot::Dorobot()
 {
 	exit = false;
@@ -197,9 +222,11 @@ Dorobot::Dorobot()
 	positioning = std::shared_ptr<Positioning>(new Positioning(this));
 	bindManager = std::shared_ptr<BindManager>(new BindManager(this));
 	sessionManager = std::shared_ptr<SessionManager>(new SessionManager(this));
+	elebot = std::shared_ptr<Elebot>(new Elebot(this));
     strafeBot->registerBinds();
     automatition->registerBinds();
     recorder->registerBinds();
+    elebot->registerBinds();
 
 	//Added both INSERT and F6 to open the menu for people who have smaller keyboards and cant find that INSERT key ¬_¬
 	input->addCallback(VK_INSERT, [this](UINT key_state) { return this->bindToggleInput(key_state); });

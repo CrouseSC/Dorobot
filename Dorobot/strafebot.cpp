@@ -16,7 +16,7 @@ void StrafeBot::cycle()
 	strafeBotCycled = shouldUseStrafeBot();
 
 	if (strafeBotCycled) {
-		nextFrameValues = calculateBestAngleAndFpsForBothDirections(*buildDefaultPmove().get());
+		nextFrameValues = calculateBestAngleAndFpsForBothDirections(*doroBot->prediction->buildDefaultPmove().get());
 		if (!doroBot->bindManager->bindActive("Override bot")) {
 			setGameToBotValues();
 		}
@@ -25,7 +25,7 @@ void StrafeBot::cycle()
 	if (!pmove->ps)
 		return;
 
-	auto predicted = buildDefaultPmove();
+	auto predicted = doroBot->prediction->buildDefaultPmove();
 	doroBot->prediction->predictMove(doroBot->game->get_fps(), doroBot->game->getView().y, false, *predicted.get());  //run prediction even if strafebot isn't active so stuff like rpg lookdown can function
 	nextFrameValues.shotRpg = predicted->pm->ps->WeaponDelay <= 3 && pmove->ps->WeaponDelay != 0;
 	nextFrameValues.onGround = predicted->pm->ps->GroundEntityNum == 1022;
@@ -259,11 +259,4 @@ PredictionValues StrafeBot::calculateBestAngleAndFpsForBothDirections(const safe
 	predictionValues.predictedViewInvert = predictionValuesInvert.predictedViewInvert;
 
 	return predictionValues;
-}
-
-std::unique_ptr<safePmove_t> StrafeBot::buildDefaultPmove()
-{
-	playerState_s* ps = (playerState_s*)(addr_playerState);
-	std::unique_ptr<safePmove_t> pmove = std::make_unique<safePmove_t>(doroBot->game->getPmoveCurrent(), ps);
-	return pmove;
 }

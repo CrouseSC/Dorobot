@@ -135,7 +135,7 @@ void UI_FpsWheel::render(Dorobot* doroBot)
 		ImVec2 windowSize(doroBot->game->getScreenRes().x * doroBot->uiMenu->fpswheel_offset_x + 5, doroBot->game->getScreenRes().y);
 		ImGui::SetNextWindowSize(windowSize);
 		ImGui::SetNextWindowPos(ImVec2(center.x - windowSize.x / 2, center.y - windowSize.y / 2));
-		ImGui::Begin("FPSWheel", 0, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoDecoration);
+		ImGui::Begin("FPSWheel", 0, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
 
 		ImGui::SetWindowFontScale(0.80f + doroBot->uiMenu->fpswheel_size / 100.f);
 
