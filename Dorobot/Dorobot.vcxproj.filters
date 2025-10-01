@@ -121,6 +121,24 @@
     <ClCompile Include="elebot.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Dev\imgui-docking\imgui.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Dev\imgui-docking\imgui_draw.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Dev\imgui-docking\imgui_tables.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Dev\imgui-docking\imgui_widgets.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Dev\imgui-docking\backends\imgui_impl_win32.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Dev\imgui-docking\backends\imgui_impl_dx9.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="dorobot.h">

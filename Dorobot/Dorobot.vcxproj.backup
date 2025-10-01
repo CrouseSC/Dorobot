@@ -93,7 +93,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp23</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <AdditionalIncludeDirectories>imgui-docking\;;$(ProjectDir)imgui-docking;$(ProjectDir)imgui-docking\backends;$(ProjectDir)d3dx9\include;$(ProjectDir)polyhook2\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>imgui-docking\;</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <AdditionalOptions>/D _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
@@ -115,7 +115,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(ProjectDir)d3dx9\include;$(ProjectDir)imgui-docking;$(ProjectDir)imgui-docking\backends;$(ProjectDir)polyhook2;$(ProjectDir)polyhook2\zydis\include;$(ProjectDir)polyhook2\zydis\dependencies\zycore\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>imgui-docking\;C:\dev\PolyHook_2_0\include;C:\Dev\imgui-docking\backends;C:\Dev\imgui-docking;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp23</LanguageStandard>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <Optimization>MaxSpeed</Optimization>
@@ -129,8 +129,8 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>PolyHook_2.lib;Zydis.lib;Zycore.lib;asmjit.lib;asmtk.lib;d3d9.lib;d3dx9.lib;dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(ProjectDir)d3dx9\lib\x86;$(ProjectDir)polyhook2\build\Release;$(ProjectDir)polyhook2\build\zydis\dependencies\zycore\Release;$(ProjectDir)polyhook2\build\zydis\Release;$(ProjectDir)polyhook2\build\asmtk\Release</AdditionalLibraryDirectories>
+      <AdditionalDependencies>PolyHook_2.lib;Zydis.lib;d3d9.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\dev\PolyHook_2_0\build\Release;C:\Dev\PolyHook_2_0\build\zydis\Release</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -141,7 +141,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(ProjectDir)\include;C:\Dev\imgui-docking;C:\Dev\imgui-docking\backends;%(AdditionalIncludeDirectories);$(ProjectDir)imgui-docking;$(ProjectDir)imgui-docking\backends;$(ProjectDir)d3dx9\include;$(ProjectDir)polyhook2\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\include;C:\Dev\imgui-docking;C:\Dev\imgui-docking\backends;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -159,7 +159,6 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>;$(ProjectDir)imgui-docking;$(ProjectDir)imgui-docking\backends;$(ProjectDir)d3dx9\include;$(ProjectDir)polyhook2\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -220,18 +219,18 @@
     <ClInclude Include="vectors.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="imgui-docking\backends\imgui_impl_dx9.cpp" />
-    <ClCompile Include="imgui-docking\backends\imgui_impl_win32.cpp" />
-    <ClCompile Include="imgui-docking\imgui.cpp">
+    <ClCompile Include="..\..\..\..\..\Dev\imgui-docking\backends\imgui_impl_dx9.cpp" />
+    <ClCompile Include="..\..\..\..\..\Dev\imgui-docking\backends\imgui_impl_win32.cpp" />
+    <ClCompile Include="..\..\..\..\..\Dev\imgui-docking\imgui.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="imgui-docking\imgui_draw.cpp">
+    <ClCompile Include="..\..\..\..\..\Dev\imgui-docking\imgui_draw.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="imgui-docking\imgui_tables.cpp">
+    <ClCompile Include="..\..\..\..\..\Dev\imgui-docking\imgui_tables.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="imgui-docking\imgui_widgets.cpp" />
+    <ClCompile Include="..\..\..\..\..\Dev\imgui-docking\imgui_widgets.cpp" />
     <ClCompile Include="Automatition.cpp" />
     <ClCompile Include="awesomefont1.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
