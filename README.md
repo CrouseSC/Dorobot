@@ -16,6 +16,7 @@ Alt-tab out of CoD4 and back
 Big thanks to kej for helping me with eles!
 
 ![me](https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExMXI4NDBubHp5Yjd2ZGh2dnhnaXhkaHY0eGJtN3lqZ2s1c3VsaHcyNCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/Dqs8XaWU8lZ3ZhVATr/giphy.gif)
+![me](https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExZjFtY25zNXE1MWViZGNlNGN1bTBrNWlhNjR2ZWZvdml3eXk5aGZ1ZiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/k8zq4PXq66BT2gd0Uq/giphy.gif)
 
 
 //////////////////////////////////////////////////////////
