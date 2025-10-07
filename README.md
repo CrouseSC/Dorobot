@@ -6,6 +6,7 @@ Bugs and missing features are to be expected.
 ## Installation
 1. Move Dorobot.asi into your Cod4/miles folder
 2. Extract Assets.7z to your Cod4 folder (so the "Dorobot" folder will be in your CoD4 root)
+3. Use Insert or CapsLock to open Dorobot Menu.
 ## FAQ, known issues
 #### X feature doesn't work, what do?
 Make sure its both enabled in the menu (if applicable) and that you've set a bind for it.
