@@ -53,6 +53,7 @@ void Dorobot::loadConfiguration() {
     uiMenu->debugToggle = j.value("PosHud", uiMenu->debugToggle);
     uiMenu->anglehelper_toggle = j.value("Anglehelper", uiMenu->anglehelper_toggle);
     uiMenu->lines_toggle = j.value("90_Lines", uiMenu->lines_toggle);
+    uiMenu->lines_rel_z = j.value("90_Lines_RelZ", uiMenu->lines_rel_z);
     uiMenu->fpswheel_toggle = j.value("FPSWheel", uiMenu->fpswheel_toggle);
     uiMenu->fpswheel_centerline_toggle = j.value("FPSWheel_centerline", uiMenu->fpswheel_centerline_toggle);
     uiMenu->pfps_toggle = j.value("pfps", uiMenu->pfps_toggle);
@@ -124,6 +125,7 @@ void Dorobot::saveConfiguration()
     j["PosHud"] = uiMenu->debugToggle;
     j["Anglehelper"] = uiMenu->anglehelper_toggle;
     j["90_Lines"] = uiMenu->lines_toggle;
+    j["90_Lines_RelZ"] = uiMenu->lines_rel_z;
     j["FPSWheel"] = uiMenu->fpswheel_toggle;
     j["FPSWheel_centerline"] = uiMenu->fpswheel_centerline_toggle;
     j["pfps"] = uiMenu->pfps_toggle;

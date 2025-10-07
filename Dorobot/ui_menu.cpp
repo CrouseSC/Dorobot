@@ -155,15 +155,20 @@ void UI_Menu::menu(Dorobot* doroBot)
                 doroBot->saveConfiguration();
             }
             ImGui::SameLine();
-            ImGui::ColorButton("90 Lines Color", lines_color);
-            if (ImGui::IsItemClicked()) ImGui::OpenPopup("90LinesColorPickerPopup");
-            if (ImGui::BeginPopup("90LinesColorPickerPopup")) {
-                ImGui::ColorPicker4("90 Lines Color Picker", &lines_color.x);
-                ImGui::EndPopup();
-                doroBot->saveConfiguration();
-            }
+            
 
-            if (ImGui::Checkbox("FPS Wheel", &fpswheel_toggle)) {
+/* 90 Lines: single interactive color swatch + single Z slider */
+{
+    ImGui::ColorEdit4("##90LinesColor", (float*)&lines_color,
+                      ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_NoTooltip | ImGuiColorEditFlags_NoDragDrop | ImGuiColorEditFlags_NoOptions);
+    ImGui::SameLine();
+    ImGui::TextUnformatted("Color Picker");
+    ImGui::Spacing();
+    ImGui::SliderFloat("90 Lines Z Offset (relative to player Z)", &lines_rel_z, -100.f, +100.f);
+    if (ImGui::IsItemDeactivatedAfterEdit()) { doroBot->saveConfiguration(); }
+}
+
+if (ImGui::Checkbox("FPS Wheel", &fpswheel_toggle)) {
                 doroBot->saveConfiguration();
             }
             if (ImGui::Checkbox("FPS Wheel Centerline", &fpswheel_centerline_toggle)) {

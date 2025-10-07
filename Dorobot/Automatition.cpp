@@ -20,6 +20,7 @@ void Automatition::registerBinds()
 	doroBot->bindManager->registerBindName("Bhop", BIND_TYPE_HOLD);
 	doroBot->bindManager->registerBindName("Yaw script", BIND_TYPE_HOLD);
 	doroBot->bindManager->registerBindName("Strafe switch on bounce", BIND_TYPE_HOLD);
+	doroBot->bindManager->registerBindName("Invert Strafebot (Hold)", BIND_TYPE_HOLD);
 }
 
 void Automatition::keyOnW()

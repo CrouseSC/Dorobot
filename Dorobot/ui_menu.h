@@ -33,6 +33,7 @@ class UI_Menu
 	float wheel_ah_pixel_scale = 1.f;
 	float wheel_pixel_scale = 1.f;
 	bool lines_toggle = false;
+	float lines_rel_z = 0.f;
 	bool pfps_toggle = false;
 	bool strafebot_toggle = false;
 	bool autofps_toggle = false;

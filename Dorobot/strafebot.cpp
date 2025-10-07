@@ -65,6 +65,21 @@ void StrafeBot::cycle()
     }
 
     // --- Noclip toggle (edge-triggered) ---
+
+// --- Strafebot invert-hold control (press = invert, release = restore) ---
+{
+    static bool invPrev = false;
+    static bool invSaved = false;
+    const bool invNow = doroBot->bindManager->bindActive("Invert Strafebot (Hold)");
+    if (invNow && !invPrev) {
+        invSaved = doroBot->uiMenu->strafebot_toggle;
+        doroBot->uiMenu->strafebot_toggle = !invSaved;
+    } else if (!invNow && invPrev) {
+        doroBot->uiMenu->strafebot_toggle = invSaved;
+    }
+    invPrev = invNow;
+}
+
     {
         #ifndef PM_NORMAL
         #define PM_NORMAL 0
@@ -190,6 +205,7 @@ void StrafeBot::registerBinds()
     // NEW: rapid SavePos spam bind
     doroBot->bindManager->registerBindName("SpamSavePos", BIND_TYPE_HOLD);
     doroBot->bindManager->registerBindName("Noclip", BIND_TYPE_TOGGLE);
+    doroBot->bindManager->registerBindName("Invert Strafebot (Hold)", BIND_TYPE_HOLD);
 }
 
 bool StrafeBot::shouldUseStrafeBot()

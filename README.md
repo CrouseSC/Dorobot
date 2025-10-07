@@ -15,7 +15,7 @@ Alt-tab out of CoD4 and back
 ##
 Big thanks to kej for helping me with eles!
 
-![me](https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExMXI4NDBubHp5Yjd2ZGh2dnhnaXhkaHY0eGJtN3lqZ2s1c3VsaHcyNCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/Dqs8XaWU8lZ3ZhVATr/giphy.gif)
+![me](https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExMXI4NDBubHp5Yjd2ZGh2dnhnaXhkaHY0eGJtN3lqZ2s1c3VsaHcyNCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/Dqs8XaWU8lZ3ZhVATr/giphy.gif) ![me] (https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExMHUwZ2JybWk4MTlidWM1cmZ3ZmxkMjVuYnpicG1sbHdkcnBoMmszbyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/k8zq4PXq66BT2gd0Uq/giphy.gif)
 
 
 //////////////////////////////////////////////////////////
@@ -25,10 +25,11 @@ This fork includes extra features all created by ChatGPT5. I have little to no e
 
 ## Additional features
 1. Added more FPS options to force in the bind menu. ie Force 142, 125, 15
-2. Enhanced Elebot. (this is kinda iffy. some maps it works great others not so much. Tried improving drop eles to act more like Anvil TAS' elebot)
+2. Enhanced Elebot. (this is kinda iffy. some maps it works great others not so much. Tried improving drop eles to act more like Anvil TAS' Elebot)
 3. Added a override bot bind that doesn't override AutoFPS.
 4. Added a SpamSavePos that will spam the SavePos bind. useful for quickly getting into a drop ele position.
+5. Changed Assets.7z to show MW2's Spinning 10th Prestige embelem
 
 I will be actively working to get more features added in with ChatGPT5's help. If you have suggestions please reach out to me on discord @ Crouse_
 
-I am not the original developer 100% of the credit goes to him and ChatGPT for this Fork... all i did was type prompts.
+I am not the original developer 100% of the credit goes to him and ChatGPT5 for this Fork... all i did was type prompts.
